@@ -1,0 +1,83 @@
+package org.example.bloodwave.config.filters;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.example.bloodwave.config.JwtUtil;
+import org.example.bloodwave.service.impl.CustomUserDetailsService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService customUserDetailsService;
+
+
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+        if (path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/webjars") ||
+                path.startsWith("/api/auth") ||
+                path.startsWith("/api/client") ||
+                path.startsWith("/api/sales-orders")
+        ){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (request.getRequestURI().startsWith("/api/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
+
+
+        String authHeader = request.getHeader("Authorization");
+
+        if(authHeader == null || !authHeader.startsWith("Bearer "))
+        {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractUsername(token);
+
+            if (email != null && !jwtUtil.isTokenExpired(token)) {
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+                System.out.println("User email: " + userDetails.getUsername());
+                System.out.println("Authorities: " + userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}
