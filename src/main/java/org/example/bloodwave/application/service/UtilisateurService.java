@@ -17,4 +17,5 @@ public interface UtilisateurService {
     public UtilisateurDtoResponse banisseUtilisateurById(Long id);
     public List<UtilisateurDtoResponse> getAllUtilisateurs();
     public UtilisateurDtoResponse activateUtilisateurById(Long id);
+    public UtilisateurDtoResponse getUtilisateurById(Long id);
 }

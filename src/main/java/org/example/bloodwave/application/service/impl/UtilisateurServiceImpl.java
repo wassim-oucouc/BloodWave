@@ -7,6 +7,7 @@ import org.example.bloodwave.application.service.UtilisateurService;
 import org.example.bloodwave.domain.entity.Utilisateur;
 import org.example.bloodwave.domain.repository.UtilisateurRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +18,12 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final UtilisateurMapper utilisateurMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, UtilisateurMapper utilisateurMapper) {
+    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, UtilisateurMapper utilisateurMapper, PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
         this.utilisateurMapper = utilisateurMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UtilisateurDtoResponse createUtilisateur(UtilisateurDTO utilisateurDTO)
@@ -56,8 +59,6 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         utilisateurFound.setActif(false);
 
         return this.utilisateurMapper.toDtoResponse(utilisateurFound);
-
-
     }
 
     public List<UtilisateurDtoResponse> getAllUtilisateurs()
@@ -72,7 +73,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         utilisateurFound.setActif(true);
 
         return this.utilisateurMapper.toDtoResponse(utilisateurFound);
+    }
 
+    public UtilisateurDtoResponse getUtilisateurById(Long id)
+    {
+        Utilisateur utilisateurFound =  this.utilisateurRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+
+        return this.utilisateurMapper.toDtoResponse(utilisateurFound);
 
     }
 }
