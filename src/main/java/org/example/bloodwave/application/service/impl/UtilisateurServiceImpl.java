@@ -2,6 +2,7 @@ package org.example.bloodwave.application.service.impl;
 
 import org.example.bloodwave.application.dto.request.UtilisateurDTO;
 import org.example.bloodwave.application.dto.response.UtilisateurDtoResponse;
+import org.example.bloodwave.application.exceptions.PasswordNotMatchException;
 import org.example.bloodwave.application.mapper.UtilisateurMapper;
 import org.example.bloodwave.application.service.UtilisateurService;
 import org.example.bloodwave.domain.entity.Utilisateur;
@@ -28,8 +29,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     public UtilisateurDtoResponse createUtilisateur(UtilisateurDTO utilisateurDTO)
     {
-   Utilisateur utilisateur =      this.utilisateurMapper.toEntity(utilisateurDTO);
-  Utilisateur utilisateurCreated =  this.utilisateurRepository.save(utilisateur);
+   Utilisateur utilisateur = this.utilisateurMapper.toEntity(utilisateurDTO);
+  Utilisateur utilisateurCreated = this.utilisateurRepository.save(utilisateur);
   return this.utilisateurMapper.toDtoResponse(utilisateurCreated);
 
     }
@@ -77,9 +78,31 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     public UtilisateurDtoResponse getUtilisateurById(Long id)
     {
-        Utilisateur utilisateurFound =  this.utilisateurRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+        Utilisateur utilisateurFound =  this.utilisateurRepository
+                .findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
 
         return this.utilisateurMapper.toDtoResponse(utilisateurFound);
 
+    }
+
+    public void changePassword(Long id,String oldPassword,String newPassword)
+    {
+        Utilisateur utilisateurFound =  this.utilisateurRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+
+      boolean check =   this.passwordEncoder
+              .matches(oldPassword,utilisateurFound.getMotDePasse());
+
+        if(check)
+        {
+            String PasswordEncoded = this.passwordEncoder.encode(newPassword);
+            utilisateurFound.setMotDePasse(PasswordEncoded);
+            this.utilisateurRepository.save(utilisateurFound);
+        }
+        else
+        {
+            throw new PasswordNotMatchException("password you entered not matched");
+        }
     }
 }

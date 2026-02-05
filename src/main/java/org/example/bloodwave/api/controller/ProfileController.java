@@ -43,4 +43,5 @@ public class ProfileController {
         );
         return ResponseEntity.ok("Password updated successfully");
     }
+
 }

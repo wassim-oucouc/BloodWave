@@ -3,8 +3,10 @@ package org.example.bloodwave.application.service.impl;
 import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.DonneurDTO;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
+import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
 import org.example.bloodwave.domain.entity.Donneur;
 import org.example.bloodwave.application.mapper.DonneurMapper;
+import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import org.example.bloodwave.domain.repository.DonneurRepository;
 import org.example.bloodwave.application.service.DonneurService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +20,7 @@ public class DonneurServiceImpl implements DonneurService {
 
     public DonneurMapper donneurMapper;
     public PasswordEncoder passwordEncoder;
-    public DonneurRepository donneurAuthRepository;
+    public DonneurRepository donneurRepository;
 
 
 
@@ -30,8 +32,19 @@ public class DonneurServiceImpl implements DonneurService {
 
         donneur.setMotDePasse(passwordHashed);
 
-        Donneur donneurCreated =  this.donneurAuthRepository.save(donneur);
+        Donneur donneurCreated =  this.donneurRepository.save(donneur);
         return this.donneurMapper.toDtoResponse(donneurCreated);
+    }
+
+    public DonneurDtoResponse updateGroupSanguinById(Long id, GroupeSanguin groupeSanguin)
+    {
+      Donneur donneurFound =   this.donneurRepository.findById(id).orElseThrow(() -> new DonneurNotFoundException("donneur not found by id : " + id));
+
+      donneurFound.setGroupeSanguin(groupeSanguin);
+
+      Donneur donneurUpdated = this.donneurRepository.save(donneurFound);
+
+      return this.donneurMapper.toDtoResponse(donneurUpdated);
     }
 
 }

@@ -18,4 +18,6 @@ public interface UtilisateurService {
     public List<UtilisateurDtoResponse> getAllUtilisateurs();
     public UtilisateurDtoResponse activateUtilisateurById(Long id);
     public UtilisateurDtoResponse getUtilisateurById(Long id);
+    public void changePassword(Long id,String oldPassword,String newPassword);
+
 }
