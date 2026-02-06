@@ -8,6 +8,8 @@ import org.example.bloodwave.application.service.CollecteSangService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/collect-sang")
 @AllArgsConstructor
@@ -39,7 +41,7 @@ public class CollectSangController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CollecteSangDtoResponse> getCollecteById(@PathVariable Long id) {
-        CollecteSangDtoResponse collecte = collecteSangService.getc(id);
+        CollecteSangDtoResponse collecte = collecteSangService.getCollecteById(id);
         return ResponseEntity.ok(collecte);
     }
 
