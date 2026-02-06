@@ -10,5 +10,4 @@ import org.springframework.stereotype.Service;
 public interface DonneurService{
     public DonneurDtoResponse registerDonneur(DonneurDTO dto);
     public DonneurDtoResponse updateGroupSanguinById(Long id, GroupeSanguin groupeSanguin);
-    public
 }
