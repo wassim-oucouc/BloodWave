@@ -22,9 +22,7 @@ public interface CollecteSangService {
     public void deleteCollecte(Long id);
     public List<CollecteSangDtoResponse> getAllCollectes();
     public CollecteSangDtoResponse getCollecteById(Long id);
-        public CollecteSangDtoResponse joinCollecte(Long collecteId, Donneur donneur);
+    public CollecteSangDtoResponse joinCollecte(Long collecteId, Donneur donneur);
     public CollecteSangDtoResponse cancelParticipation(Long collecteId, Donneur donneur);
     public List<CollecteSangDtoResponse> getCollectesByStatus(StatutCollecte statut);
-
-
 }

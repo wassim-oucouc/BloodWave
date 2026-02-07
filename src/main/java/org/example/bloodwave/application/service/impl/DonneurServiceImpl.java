@@ -47,4 +47,13 @@ public class DonneurServiceImpl implements DonneurService {
       return this.donneurMapper.toDtoResponse(donneurUpdated);
     }
 
+    public Donneur findDonneurById(Long id)
+    {
+        return   this.donneurRepository
+                .findById(id)
+                .orElseThrow(()
+                        -> new DonneurNotFoundException("donneur not found by id : " + id));
+
+    }
+
 }
