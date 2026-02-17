@@ -10,15 +10,7 @@ import java.util.List;
 public class StockSangDtoResponse {
 
     private Long id;
-
     private GroupeSanguin groupeSanguin;
-
     private Integer quantiteDisponible;
-    private Integer seuilAlerte;
-
     private HopitalDtoResponse hopitalDtoResponse;
-
-    private List<UniteSangDtoResponse> uniteSangDtoResponses;
-
-    private List<MouvementStockDtoResponse> mouvements;
 }

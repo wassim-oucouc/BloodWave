@@ -8,10 +8,12 @@ import org.example.bloodwave.application.service.DemandeSangService;
 import org.example.bloodwave.domain.entity.DemandeSang;
 import org.example.bloodwave.domain.entity.Demandeur;
 import org.example.bloodwave.domain.entity.Hopital;
+import org.example.bloodwave.domain.entity.StockSang;
 import org.example.bloodwave.domain.enumeration.StatutDemande;
 import org.example.bloodwave.domain.repository.DemandeSangRepository;
 import org.example.bloodwave.domain.repository.DemandeurRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
+import org.example.bloodwave.domain.repository.StockSangRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +26,7 @@ public class DemandeSangServiceImpl implements DemandeSangService {
     private final DemandeurRepository demandeurRepository;
     private final HopitalRepository hopitalRepository;
     private final DemandeSangMapper demandeSangMapper;
+    private final StockSangRepository  stockSangRepository;
 
     @Override
     public DemandeSangDtoResponse create(DemandeSangDTO dto) {
@@ -89,6 +92,36 @@ public class DemandeSangServiceImpl implements DemandeSangService {
         DemandeSang updated = demandeSangRepository.save(demandeSang);
 
         return demandeSangMapper.toDtoResponse(updated);
+    }
+
+    @Override
+    public List<DemandeSangDtoResponse> getDemandesByHopital(Long hopitalId) {
+        return demandeSangRepository.findByHopitalId(hopitalId)
+                .stream()
+                .map(demandeSangMapper::toDtoResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DemandeSangDtoResponse traiterDemande(Long demandeId, StatutDemande statut) {
+        DemandeSang demande = demandeSangRepository.findById(demandeId)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+
+        if (statut == StatutDemande.ACCEPTEE) {
+            StockSang stock = stockSangRepository
+                    .findByHopitalIdAndGroupeSanguin(demande.getHopital().getId(), demande.getGroupeSanguin())
+                    .orElseThrow(() -> new RuntimeException("Stock insuffisant ou inexistant"));
+
+            if (stock.getQuantiteDisponible() < demande.getQuantiteDemandee()) {
+                throw new RuntimeException("Quantité insuffisante en stock");
+            }
+
+            stock.setQuantiteDisponible(stock.getQuantiteDisponible() - demande.getQuantiteDemandee());
+            stockSangRepository.save(stock);
+        }
+
+        demande.setStatut(statut);
+        return demandeSangMapper.toDtoResponse(demandeSangRepository.save(demande));
     }
 
 }

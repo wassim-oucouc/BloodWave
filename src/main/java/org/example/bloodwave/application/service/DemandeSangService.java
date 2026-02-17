@@ -15,9 +15,13 @@ public interface DemandeSangService {
 
     List<DemandeSangDtoResponse> getByDemandeur(Long demandeurId);
 
-    public List<DemandeSangDtoResponse> getAll();
+     List<DemandeSangDtoResponse> getAll();
 
         DemandeSangDtoResponse getById(Long id);
 
     DemandeSangDtoResponse updateStatut(Long id, StatutDemande statut);
+
+    List<DemandeSangDtoResponse> getDemandesByHopital(Long hopitalId);
+
+    DemandeSangDtoResponse traiterDemande(Long demandeId, StatutDemande statut);
 }
