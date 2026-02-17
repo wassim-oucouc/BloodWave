@@ -1,11 +1,13 @@
 package org.example.bloodwave.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 
 import java.util.List;
 
 @Entity
+@Data
 public class StockSang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
 package org.example.bloodwave.application.dto.response;
 
-public class DonneurDtoResponse {
+public class DonneurDtoResponse extends UtilisateurDtoResponse{
 }

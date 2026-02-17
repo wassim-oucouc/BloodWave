@@ -1,9 +1,6 @@
 package org.example.bloodwave.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import java.time.LocalDate;
@@ -20,8 +17,10 @@ public class Donneur extends Utilisateur {
     private Boolean disponible;
     private Integer nombreDonsTotaux;
 
+    @OneToMany
     private List<Don> dons;
 
-    @OneToMany(mappedBy = "donneur")
+    @OneToMany
+    @JoinColumn(name = "donneur_id")
     private List<InscriptionCollecte> inscriptions;
 }
