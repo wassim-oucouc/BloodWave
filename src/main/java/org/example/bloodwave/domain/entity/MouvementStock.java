@@ -21,4 +21,7 @@ public class MouvementStock
 
     @ManyToOne
     private StockSang stockSang;
+
+    @ManyToOne
+    private UniteSang uniteSang;
 }
