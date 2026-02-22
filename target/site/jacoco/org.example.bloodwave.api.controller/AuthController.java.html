@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.api.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.api.controller;
+
+import org.example.bloodwave.application.service.*;
+import org.example.bloodwave.infrastructure.config.JwtUtil;
+import org.example.bloodwave.application.dto.request.DemandeurDTO;
+import org.example.bloodwave.application.dto.request.DonneurDTO;
+import org.example.bloodwave.application.dto.request.HopitalDTO;
+import org.example.bloodwave.application.dto.request.LoginRequest;
+import org.example.bloodwave.application.dto.response.DemandeurDtoResponse;
+import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
+import org.example.bloodwave.application.dto.response.HopitalDtoResponse;
+import org.example.bloodwave.domain.entity.RefreshToken;
+import org.example.bloodwave.domain.entity.Utilisateur;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/api/auth&quot;)
+public class AuthController {
+
+    private final DonneurService donneurService;
+    private final DemandeurService demandeurService;
+    private final HopitalService hopitalService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
+    private final AuthService authService;
+
+    @Autowired
+    public AuthController(DonneurService donneurService, DemandeurService demandeurService, HopitalService hopitalService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, RefreshTokenService refreshTokenService, AuthService authService)
+<span class="fc" id="L36">    {</span>
+<span class="fc" id="L37">        this.donneurService = donneurService;</span>
+<span class="fc" id="L38">        this.demandeurService = demandeurService;</span>
+<span class="fc" id="L39">        this.hopitalService = hopitalService;</span>
+<span class="fc" id="L40">        this.authenticationManager = authenticationManager;</span>
+<span class="fc" id="L41">        this.jwtUtil = jwtUtil;</span>
+<span class="fc" id="L42">        this.refreshTokenService = refreshTokenService;</span>
+<span class="fc" id="L43">        this.authService = authService;</span>
+<span class="fc" id="L44">    }</span>
+
+    @PostMapping(&quot;/register/donneur&quot;)
+    public ResponseEntity&lt;DonneurDtoResponse&gt; registerDonneur(@RequestBody DonneurDTO dto)
+    {
+<span class="nc" id="L49">        return ResponseEntity.ok().body(this.donneurService.registerDonneur(dto));</span>
+    }
+
+    @PostMapping(&quot;/register/demandeur&quot;)
+    public ResponseEntity&lt;DemandeurDtoResponse&gt; registerDemandeur(@RequestBody DemandeurDTO dto)
+    {
+<span class="nc" id="L55">        return ResponseEntity.ok().body(this.demandeurService.registerDemandeur(dto));</span>
+    }
+
+    @PostMapping(&quot;/register/hopital&quot;)
+    public ResponseEntity&lt;HopitalDtoResponse&gt; registerHopital(@RequestBody HopitalDTO dto)
+    {
+<span class="nc" id="L61">        return ResponseEntity.ok().body(this.hopitalService.registerHopital(dto));</span>
+    }
+
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;?&gt; login(@RequestBody LoginRequest loginRequest)
+    {
+
+<span class="nc" id="L68">        this.authenticationManager.authenticate(</span>
+<span class="nc" id="L69">                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword())</span>
+        );
+
+<span class="nc" id="L72">        Utilisateur utilisateur =  this.authService.getUserByEmail(loginRequest.getEmail());</span>
+<span class="nc" id="L73">        String token =   this.jwtUtil.generateToken(utilisateur.getEmail(),utilisateur);</span>
+<span class="nc" id="L74">        RefreshToken refreshToken =  this.refreshTokenService.create(utilisateur.getEmail());</span>
+
+<span class="nc" id="L76">        Map&lt;String, String&gt; response = Map.of(</span>
+                &quot;accessToken&quot;, token,
+<span class="nc" id="L78">                &quot;refreshToken&quot;, refreshToken.getToken()</span>
+        );
+
+<span class="nc" id="L81">        return ResponseEntity.ok(response);</span>
+
+    }
+
+    @PostMapping(&quot;/reset-password/{email}&quot;)
+    public ResponseEntity&lt;String&gt; SendEmailResetPassword(@PathVariable(&quot;email&quot;) String email)
+    {
+<span class="nc" id="L88">        this.authService.resetPasswordByEmail(email);</span>
+<span class="nc" id="L89">        return ResponseEntity.ok().body(&quot;email reset password is sent&quot;);</span>
+    }
+
+    @PutMapping(&quot;/reset-password/token/{token}&quot;)
+    public ResponseEntity&lt;String&gt; resetPasswordByToken(@PathVariable(&quot;token&quot;) String token,@RequestBody String password)
+    {
+<span class="nc" id="L95">        this.authService.resetPasswordByToken(token,password);</span>
+<span class="nc" id="L96">        return ResponseEntity.ok().body(&quot;Your Password is reset success&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

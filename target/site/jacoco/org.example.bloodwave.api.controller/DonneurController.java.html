@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DonneurController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.api.controller</a> &gt; <span class="el_source">DonneurController.java</span></div><h1>DonneurController.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.api.controller;
+
+
+import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.dto.response.CollecteSangDtoResponse;
+import org.example.bloodwave.application.dto.response.DonDtoResponse;
+import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
+import org.example.bloodwave.application.service.CollecteSangService;
+import org.example.bloodwave.application.service.DonService;
+import org.example.bloodwave.application.service.DonneurService;
+import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.domain.enumeration.GroupeSanguin;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/donneur&quot;)
+@AllArgsConstructor
+public class DonneurController {
+
+    public final DonneurService donneurService;
+    private final DonService donService;
+    private final CollecteSangService collecteSangService;
+
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;DonneurDtoResponse&gt; updateGroupeSanguinById(@PathVariable(&quot;id&quot;) Long id, @RequestBody GroupeSanguin groupeSanguin)
+    {
+<span class="nc" id="L31">       DonneurDtoResponse donneurDtoResponse =  this.donneurService.updateGroupSanguinById(id,groupeSanguin);</span>
+
+<span class="nc" id="L33">       return ResponseEntity.ok().body(donneurDtoResponse);</span>
+    }
+
+    @GetMapping(&quot;/donations/{id}&quot;)
+    public ResponseEntity&lt;List&lt;DonDtoResponse&gt;&gt; getDonationHistory(@PathVariable(&quot;id&quot;) Long id)
+    {
+<span class="nc" id="L39">        return ResponseEntity.ok().body(this.donService.getDonationHistoryById(id));</span>
+    }
+
+    @PostMapping(&quot;/{donneurId}/collectes/{collecteId}/join&quot;)
+    public ResponseEntity&lt;CollecteSangDtoResponse&gt; joinCollecte(
+            @PathVariable Long donneurId,
+            @PathVariable Long collecteId
+    ) {
+<span class="nc" id="L47">        Donneur donneur = this.donneurService.findDonneurById(donneurId);</span>
+<span class="nc" id="L48">        CollecteSangDtoResponse joined = collecteSangService.joinCollecte(collecteId, donneur);</span>
+<span class="nc" id="L49">        return ResponseEntity.ok(joined);</span>
+    }
+
+    @PostMapping(&quot;/{donneurId}/collectes/{collecteId}/cancel&quot;)
+    public ResponseEntity&lt;CollecteSangDtoResponse&gt; cancelParticipation(
+            @PathVariable Long donneurId,
+            @PathVariable Long collecteId
+    ) {
+<span class="nc" id="L57">        Donneur donneur = this.donneurService.findDonneurById(donneurId);</span>
+<span class="nc" id="L58">        CollecteSangDtoResponse canceled = collecteSangService.cancelParticipation(collecteId, donneur);</span>
+<span class="nc" id="L59">        return ResponseEntity.ok(canceled);</span>
+    }
+
+    @GetMapping(&quot;/{donneurId}/collectes/{collecteId}&quot;)
+    public ResponseEntity&lt;CollecteSangDtoResponse&gt; getCollecteDetails(
+            @PathVariable Long collecteId
+    ) {
+<span class="nc" id="L66">        CollecteSangDtoResponse collecte = collecteSangService.getCollecteById(collecteId);</span>
+<span class="nc" id="L67">        return ResponseEntity.ok(collecte);</span>
+    }
+
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

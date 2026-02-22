@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DonneurServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.application.service.impl</a> &gt; <span class="el_source">DonneurServiceImpl.java</span></div><h1>DonneurServiceImpl.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.application.service.impl;
+
+import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.dto.request.DonneurDTO;
+import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
+import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
+import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.application.mapper.DonneurMapper;
+import org.example.bloodwave.domain.enumeration.GroupeSanguin;
+import org.example.bloodwave.domain.repository.DonneurRepository;
+import org.example.bloodwave.application.service.DonneurService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+
+@Service
+@AllArgsConstructor
+public class DonneurServiceImpl implements DonneurService {
+
+
+    public DonneurMapper donneurMapper;
+    public PasswordEncoder passwordEncoder;
+    public DonneurRepository donneurRepository;
+
+
+
+    public DonneurDtoResponse registerDonneur(DonneurDTO dto)
+    {
+<span class="nc" id="L29">        Donneur donneur  = this.donneurMapper.toEntity(dto);</span>
+
+<span class="nc" id="L31">        String passwordHashed = this.passwordEncoder.encode(donneur.getMotDePasse());</span>
+
+<span class="nc" id="L33">        donneur.setMotDePasse(passwordHashed);</span>
+
+<span class="nc" id="L35">        Donneur donneurCreated =  this.donneurRepository.save(donneur);</span>
+<span class="nc" id="L36">        return this.donneurMapper.toDtoResponse(donneurCreated);</span>
+    }
+
+    public DonneurDtoResponse updateGroupSanguinById(Long id, GroupeSanguin groupeSanguin)
+    {
+<span class="nc" id="L41">      Donneur donneurFound =   this.donneurRepository.findById(id).orElseThrow(() -&gt; new DonneurNotFoundException(&quot;donneur not found by id : &quot; + id));</span>
+
+<span class="nc" id="L43">      donneurFound.setGroupeSanguin(groupeSanguin);</span>
+
+<span class="nc" id="L45">      Donneur donneurUpdated = this.donneurRepository.save(donneurFound);</span>
+
+<span class="nc" id="L47">      return this.donneurMapper.toDtoResponse(donneurUpdated);</span>
+    }
+
+    public Donneur findDonneurById(Long id)
+    {
+<span class="nc" id="L52">        return   this.donneurRepository</span>
+<span class="nc" id="L53">                .findById(id)</span>
+<span class="nc" id="L54">                .orElseThrow(()</span>
+<span class="nc" id="L55">                        -&gt; new DonneurNotFoundException(&quot;donneur not found by id : &quot; + id));</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

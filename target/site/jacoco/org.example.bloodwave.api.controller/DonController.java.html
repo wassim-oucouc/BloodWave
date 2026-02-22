@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DonController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.api.controller</a> &gt; <span class="el_source">DonController.java</span></div><h1>DonController.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.api.controller;
+
+import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.dto.request.DonDTO;
+import org.example.bloodwave.application.dto.response.DonDtoResponse;
+import org.example.bloodwave.application.exceptions.DonNotFoundException;
+import org.example.bloodwave.application.service.DonService;
+import org.example.bloodwave.domain.enumeration.StatutDon;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/dons&quot;)
+public class DonController {
+
+    private final DonService donService;
+
+    @Autowired
+<span class="fc" id="L23">    public DonController(DonService donService) {</span>
+<span class="fc" id="L24">        this.donService = donService;</span>
+<span class="fc" id="L25">    }</span>
+
+    @PostMapping
+    public ResponseEntity&lt;DonDtoResponse&gt; createDon(@RequestBody DonDTO dto) {
+<span class="nc" id="L29">        DonDtoResponse created = donService.createDonation(dto);</span>
+<span class="nc" id="L30">        return ResponseEntity.ok(created);</span>
+    }
+
+    @PutMapping(&quot;/{id}/approve&quot;)
+    public ResponseEntity&lt;DonDtoResponse&gt; approveDon(@PathVariable Long id) {
+<span class="nc" id="L35">        DonDtoResponse approved = donService.approveDonation(id);</span>
+<span class="nc" id="L36">        return ResponseEntity.ok(approved);</span>
+    }
+
+    @PutMapping(&quot;/{id}/cancel&quot;)
+    public ResponseEntity&lt;DonDtoResponse&gt; cancelDon(@PathVariable Long id) {
+<span class="nc" id="L41">        DonDtoResponse canceled = donService.cancelDonById(id);</span>
+<span class="nc" id="L42">        return ResponseEntity.ok(canceled);</span>
+    }
+
+    @GetMapping(&quot;/status/{statut}&quot;)
+    public ResponseEntity&lt;List&lt;DonDtoResponse&gt;&gt; getDonsByStatus(@PathVariable StatutDon statut) {
+<span class="nc" id="L47">        List&lt;DonDtoResponse&gt; dons = donService.getDonsByStatus(statut);</span>
+<span class="nc" id="L48">        return ResponseEntity.ok(dons);</span>
+    }
+
+    @GetMapping(&quot;/status/{statut}/pageable&quot;)
+    public ResponseEntity&lt;Page&lt;DonDtoResponse&gt;&gt; getDonsByStatusPageable(
+            @RequestParam int size,
+            @RequestParam int page,
+            @PathVariable StatutDon statut
+    ) {
+<span class="nc" id="L57">        Page&lt;DonDtoResponse&gt; dons = donService.getDonsByStatusPageable(size, page, statut);</span>
+<span class="nc" id="L58">        return ResponseEntity.ok(dons);</span>
+    }
+
+    @GetMapping(&quot;/history/{donneurId}&quot;)
+    public ResponseEntity&lt;List&lt;DonDtoResponse&gt;&gt; getDonationHistory(@PathVariable Long donneurId) {
+<span class="nc" id="L63">        List&lt;DonDtoResponse&gt; history = donService.getDonationHistoryById(donneurId);</span>
+<span class="nc" id="L64">        return ResponseEntity.ok(history);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;DonDtoResponse&gt; getDonById(@PathVariable Long id) {
+<span class="nc" id="L69">        DonDtoResponse don = donService.getDonationHistoryById(id)</span>
+<span class="nc" id="L70">                .stream()</span>
+<span class="nc" id="L71">                .findFirst()</span>
+<span class="nc" id="L72">                .orElseThrow(() -&gt; new DonNotFoundException(&quot;Don not found with id &quot; + id));</span>
+<span class="nc" id="L73">        return ResponseEntity.ok(don);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

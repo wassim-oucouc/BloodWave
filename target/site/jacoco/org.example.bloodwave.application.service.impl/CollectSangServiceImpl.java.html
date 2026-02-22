@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CollectSangServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.application.service.impl</a> &gt; <span class="el_source">CollectSangServiceImpl.java</span></div><h1>CollectSangServiceImpl.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.application.service.impl;
+
+import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.dto.request.CollecteSangDTO;
+import org.example.bloodwave.application.dto.response.CollecteSangDtoResponse;
+import org.example.bloodwave.application.exceptions.CollecteNotFoundException;
+import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
+import org.example.bloodwave.application.mapper.CollecteSangMapper;
+import org.example.bloodwave.application.service.CollecteSangService;
+import org.example.bloodwave.domain.entity.CollecteSang;
+import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.domain.entity.Hopital;
+import org.example.bloodwave.domain.entity.InscriptionCollecte;
+import org.example.bloodwave.domain.enumeration.StatutCollecte;
+import org.example.bloodwave.domain.repository.CollecteSangRepository;
+import org.example.bloodwave.domain.repository.HopitalRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+
+@Service
+@AllArgsConstructor
+public class CollectSangServiceImpl implements CollecteSangService {
+
+    private final CollecteSangRepository collecteSangRepository;
+    private final HopitalRepository hopitalRepository;
+    private final CollecteSangMapper collecteSangMapper;
+
+
+
+    public CollecteSangDtoResponse createCollecte(CollecteSangDTO dto) {
+<span class="nc" id="L33">        Hopital hopital = hopitalRepository.findById(dto.getHopitalId())</span>
+<span class="nc" id="L34">                .orElseThrow(() -&gt; new HopitalNotFoundException(&quot;Hopital not found with id &quot; + dto.getHopitalId()));</span>
+
+<span class="nc" id="L36">        CollecteSang collecte = collecteSangMapper.toEntity(dto);</span>
+<span class="nc" id="L37">        collecte.setHopital(hopital);</span>
+<span class="nc" id="L38">        collecte.setStatut(StatutCollecte.PLANIFIEE);</span>
+
+<span class="nc" id="L40">        CollecteSang created = collecteSangRepository.save(collecte);</span>
+<span class="nc" id="L41">        return collecteSangMapper.toDtoResponse(created);</span>
+    }
+
+
+    public CollecteSangDtoResponse updateCollecte(Long id, CollecteSangDTO dto) {
+<span class="nc" id="L46">        CollecteSang collecte = collecteSangRepository.findById(id)</span>
+<span class="nc" id="L47">                .orElseThrow(() -&gt; new CollecteNotFoundException(&quot;Collecte not found with id &quot; + id));</span>
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (dto.getHopitalId() != null) {</span>
+<span class="nc" id="L50">            Hopital hopital = hopitalRepository.findById(dto.getHopitalId())</span>
+<span class="nc" id="L51">                    .orElseThrow(() -&gt; new HopitalNotFoundException(&quot;Hopital not found with id &quot; + dto.getHopitalId()));</span>
+<span class="nc" id="L52">            collecte.setHopital(hopital);</span>
+        }
+
+<span class="nc" id="L55">        collecte.setDateCollecte(dto.getDateCollecte());</span>
+<span class="nc" id="L56">        collecte.setLieu(dto.getLieu());</span>
+<span class="nc" id="L57">        collecte.setCapaciteMax(dto.getCapaciteMax());</span>
+<span class="nc" id="L58">        collecte.setStatut(dto.getStatut());</span>
+
+<span class="nc" id="L60">        CollecteSang updated = collecteSangRepository.save(collecte);</span>
+<span class="nc" id="L61">        return collecteSangMapper.toDtoResponse(updated);</span>
+    }
+
+    public void deleteCollecte(Long id) {
+<span class="nc" id="L65">        CollecteSang collecte = collecteSangRepository.findById(id)</span>
+<span class="nc" id="L66">                .orElseThrow(() -&gt; new CollecteNotFoundException(&quot;Collecte not found with id &quot; + id));</span>
+<span class="nc" id="L67">        collecteSangRepository.delete(collecte);</span>
+<span class="nc" id="L68">    }</span>
+
+    public CollecteSangDtoResponse getCollecteById(Long id) {
+<span class="nc" id="L71">        CollecteSang collecte = collecteSangRepository.findById(id)</span>
+<span class="nc" id="L72">                .orElseThrow(() -&gt; new CollecteNotFoundException(&quot;Collecte not found with id &quot; + id));</span>
+
+<span class="nc" id="L74">        return collecteSangMapper.toDtoResponse(collecte);</span>
+    }
+
+    public List&lt;CollecteSangDtoResponse&gt; getAllCollectes() {
+<span class="nc" id="L78">        return collecteSangRepository.findAll()</span>
+<span class="nc" id="L79">                .stream()</span>
+<span class="nc" id="L80">                .map(collecteSangMapper::toDtoResponse)</span>
+<span class="nc" id="L81">                .toList();</span>
+    }
+
+
+    public CollecteSangDtoResponse joinCollecte(Long collecteId, Donneur donneur) {
+<span class="nc" id="L86">        CollecteSang collecte = collecteSangRepository.findById(collecteId)</span>
+<span class="nc" id="L87">                .orElseThrow(() -&gt; new CollecteNotFoundException(&quot;Collecte not found with id &quot; + collecteId));</span>
+
+<span class="nc" id="L89">        InscriptionCollecte inscription = new InscriptionCollecte();</span>
+<span class="nc" id="L90">        inscription.setCollecte(collecte);</span>
+<span class="nc" id="L91">        inscription.setDonneur(donneur);</span>
+
+<span class="nc" id="L93">        collecte.getInscriptions().add(inscription);</span>
+
+<span class="nc" id="L95">        CollecteSang updated = collecteSangRepository.save(collecte);</span>
+
+<span class="nc" id="L97">        return collecteSangMapper.toDtoResponse(updated);</span>
+    }
+
+    public CollecteSangDtoResponse cancelParticipation(Long collecteId, Donneur donneur) {
+<span class="nc" id="L101">        CollecteSang collecte = collecteSangRepository.findById(collecteId)</span>
+<span class="nc" id="L102">                .orElseThrow(() -&gt; new CollecteNotFoundException(&quot;Collecte not found with id &quot; + collecteId));</span>
+
+<span class="nc" id="L104">        collecte.setStatut(StatutCollecte.ANNULEE);</span>
+
+<span class="nc" id="L106">        CollecteSang updated = collecteSangRepository.save(collecte);</span>
+<span class="nc" id="L107">        return collecteSangMapper.toDtoResponse(updated);</span>
+    }
+
+    public List&lt;CollecteSangDtoResponse&gt; getCollectesByStatus(StatutCollecte statut) {
+<span class="nc" id="L111">        return collecteSangRepository.findByStatut(statut)</span>
+<span class="nc" id="L112">                .stream()</span>
+<span class="nc" id="L113">                .map(collecteSangMapper::toDtoResponse)</span>
+<span class="nc" id="L114">                .toList();</span>
+    }
+
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

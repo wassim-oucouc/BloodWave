@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CollectSangController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.api.controller</a> &gt; <span class="el_source">CollectSangController.java</span></div><h1>CollectSangController.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.api.controller;
+
+
+import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.dto.request.CollecteSangDTO;
+import org.example.bloodwave.application.dto.response.CollecteSangDtoResponse;
+import org.example.bloodwave.application.service.CollecteSangService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/collect-sang&quot;)
+@AllArgsConstructor
+public class CollectSangController {
+
+    private final CollecteSangService collecteSangService;
+
+
+    @PostMapping
+    public ResponseEntity&lt;CollecteSangDtoResponse&gt; createCollecte(@RequestBody CollecteSangDTO dto) {
+<span class="nc" id="L23">        CollecteSangDtoResponse created = collecteSangService.createCollecte(dto);</span>
+<span class="nc" id="L24">        return ResponseEntity.ok(created);</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;CollecteSangDtoResponse&gt; updateCollecte(
+            @PathVariable Long id,
+            @RequestBody CollecteSangDTO dto
+    ) {
+<span class="nc" id="L32">        CollecteSangDtoResponse updated = collecteSangService.updateCollecte(id, dto);</span>
+<span class="nc" id="L33">        return ResponseEntity.ok(updated);</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteCollecte(@PathVariable Long id) {
+<span class="nc" id="L38">        collecteSangService.deleteCollecte(id);</span>
+<span class="nc" id="L39">        return ResponseEntity.noContent().build();</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;CollecteSangDtoResponse&gt; getCollecteById(@PathVariable Long id) {
+<span class="nc" id="L44">        CollecteSangDtoResponse collecte = collecteSangService.getCollecteById(id);</span>
+<span class="nc" id="L45">        return ResponseEntity.ok(collecte);</span>
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;CollecteSangDtoResponse&gt;&gt; getAllCollectes() {
+<span class="nc" id="L50">        List&lt;CollecteSangDtoResponse&gt; collectes = collecteSangService.getAllCollectes();</span>
+<span class="nc" id="L51">        return ResponseEntity.ok(collectes);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

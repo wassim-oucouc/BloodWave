@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HopitalMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.application.mapper</a> &gt; <span class="el_source">HopitalMapperImpl.java</span></div><h1>HopitalMapperImpl.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.application.mapper;
+
+import javax.annotation.processing.Generated;
+import org.example.bloodwave.application.dto.request.HopitalDTO;
+import org.example.bloodwave.application.dto.response.HopitalDtoResponse;
+import org.example.bloodwave.domain.entity.Hopital;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2026-02-13T16:52:45+0100&quot;,
+    comments = &quot;version: 1.6.3, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)&quot;
+)
+@Component
+<span class="fc" id="L15">public class HopitalMapperImpl extends HopitalMapper {</span>
+
+    @Override
+    public Hopital toEntity(HopitalDTO dto) {
+<span class="nc bnc" id="L19" title="All 2 branches missed.">        if ( dto == null ) {</span>
+<span class="nc" id="L20">            return null;</span>
+        }
+
+<span class="nc" id="L23">        Hopital hopital = new Hopital();</span>
+
+<span class="nc" id="L25">        hopital.setId( dto.getId() );</span>
+<span class="nc" id="L26">        hopital.setNom( dto.getNom() );</span>
+<span class="nc" id="L27">        hopital.setPrenom( dto.getPrenom() );</span>
+<span class="nc" id="L28">        hopital.setEmail( dto.getEmail() );</span>
+<span class="nc" id="L29">        hopital.setMotDePasse( dto.getMotDePasse() );</span>
+<span class="nc" id="L30">        hopital.setTelephone( dto.getTelephone() );</span>
+<span class="nc" id="L31">        hopital.setAdresse( dto.getAdresse() );</span>
+<span class="nc" id="L32">        hopital.setRole( dto.getRole() );</span>
+<span class="nc" id="L33">        hopital.setActif( dto.getActif() );</span>
+<span class="nc" id="L34">        hopital.setNomHopital( dto.getNomHopital() );</span>
+<span class="nc" id="L35">        hopital.setVille( dto.getVille() );</span>
+<span class="nc" id="L36">        hopital.setCapaciteStockage( dto.getCapaciteStockage() );</span>
+
+<span class="nc" id="L38">        return hopital;</span>
+    }
+
+    @Override
+    public HopitalDtoResponse toDtoResponse(Hopital hopital) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if ( hopital == null ) {</span>
+<span class="nc" id="L44">            return null;</span>
+        }
+
+<span class="nc" id="L47">        HopitalDtoResponse hopitalDtoResponse = new HopitalDtoResponse();</span>
+
+<span class="nc" id="L49">        hopitalDtoResponse.setId( hopital.getId() );</span>
+<span class="nc" id="L50">        hopitalDtoResponse.setNom( hopital.getNom() );</span>
+<span class="nc" id="L51">        hopitalDtoResponse.setPrenom( hopital.getPrenom() );</span>
+<span class="nc" id="L52">        hopitalDtoResponse.setEmail( hopital.getEmail() );</span>
+<span class="nc" id="L53">        hopitalDtoResponse.setTelephone( hopital.getTelephone() );</span>
+<span class="nc" id="L54">        hopitalDtoResponse.setAdresse( hopital.getAdresse() );</span>
+<span class="nc" id="L55">        hopitalDtoResponse.setRole( hopital.getRole() );</span>
+<span class="nc" id="L56">        hopitalDtoResponse.setActif( hopital.getActif() );</span>
+
+<span class="nc" id="L58">        return hopitalDtoResponse;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

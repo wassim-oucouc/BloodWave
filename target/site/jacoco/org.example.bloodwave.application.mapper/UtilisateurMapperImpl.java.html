@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UtilisateurMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BloodWave</a> &gt; <a href="index.source.html" class="el_package">org.example.bloodwave.application.mapper</a> &gt; <span class="el_source">UtilisateurMapperImpl.java</span></div><h1>UtilisateurMapperImpl.java</h1><pre class="source lang-java linenums">package org.example.bloodwave.application.mapper;
+
+import javax.annotation.processing.Generated;
+import org.example.bloodwave.application.dto.request.DemandeurDTO;
+import org.example.bloodwave.application.dto.request.DonneurDTO;
+import org.example.bloodwave.application.dto.request.HopitalDTO;
+import org.example.bloodwave.application.dto.request.UtilisateurDTO;
+import org.example.bloodwave.application.dto.response.UtilisateurDtoResponse;
+import org.example.bloodwave.domain.entity.Demandeur;
+import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.domain.entity.Hopital;
+import org.example.bloodwave.domain.entity.Utilisateur;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2026-02-13T16:52:46+0100&quot;,
+    comments = &quot;version: 1.6.3, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)&quot;
+)
+@Component
+<span class="fc" id="L22">public class UtilisateurMapperImpl extends UtilisateurMapper {</span>
+
+    @Autowired
+    private DonneurMapper donneurMapper;
+    @Autowired
+    private DemandeurMapper demandeurMapper;
+    @Autowired
+    private HopitalMapper hopitalMapper;
+
+    @Override
+    public Utilisateur toEntity(UtilisateurDTO utilisateurDTO) {
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if ( utilisateurDTO == null ) {</span>
+<span class="nc" id="L34">            return null;</span>
+        }
+
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (utilisateurDTO instanceof HopitalDTO) {</span>
+<span class="nc" id="L38">            return hopitalMapper.toEntity( (HopitalDTO) utilisateurDTO );</span>
+        }
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        else if (utilisateurDTO instanceof DemandeurDTO) {</span>
+<span class="nc" id="L41">            return demandeurMapper.toEntity( (DemandeurDTO) utilisateurDTO );</span>
+        }
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        else if (utilisateurDTO instanceof DonneurDTO) {</span>
+<span class="nc" id="L44">            return donneurMapper.toEntity( (DonneurDTO) utilisateurDTO );</span>
+        }
+        else {
+<span class="nc" id="L47">            Utilisateur utilisateur = createEntity( utilisateurDTO );</span>
+
+<span class="nc" id="L49">            utilisateur.setId( utilisateurDTO.getId() );</span>
+<span class="nc" id="L50">            utilisateur.setNom( utilisateurDTO.getNom() );</span>
+<span class="nc" id="L51">            utilisateur.setPrenom( utilisateurDTO.getPrenom() );</span>
+<span class="nc" id="L52">            utilisateur.setEmail( utilisateurDTO.getEmail() );</span>
+<span class="nc" id="L53">            utilisateur.setMotDePasse( utilisateurDTO.getMotDePasse() );</span>
+<span class="nc" id="L54">            utilisateur.setTelephone( utilisateurDTO.getTelephone() );</span>
+<span class="nc" id="L55">            utilisateur.setAdresse( utilisateurDTO.getAdresse() );</span>
+<span class="nc" id="L56">            utilisateur.setRole( utilisateurDTO.getRole() );</span>
+<span class="nc" id="L57">            utilisateur.setActif( utilisateurDTO.getActif() );</span>
+
+<span class="nc" id="L59">            return utilisateur;</span>
+        }
+    }
+
+    @Override
+    public UtilisateurDtoResponse toDtoResponse(Utilisateur utilisateur) {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if ( utilisateur == null ) {</span>
+<span class="nc" id="L66">            return null;</span>
+        }
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (utilisateur instanceof Hopital) {</span>
+<span class="nc" id="L70">            return hopitalMapper.toDtoResponse( (Hopital) utilisateur );</span>
+        }
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        else if (utilisateur instanceof Demandeur) {</span>
+<span class="nc" id="L73">            return demandeurMapper.toDtoResponse( (Demandeur) utilisateur );</span>
+        }
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        else if (utilisateur instanceof Donneur) {</span>
+<span class="nc" id="L76">            return donneurMapper.toDtoResponse( (Donneur) utilisateur );</span>
+        }
+        else {
+<span class="nc" id="L79">            UtilisateurDtoResponse utilisateurDtoResponse = createDtoResponse( utilisateur );</span>
+
+<span class="nc" id="L81">            utilisateurDtoResponse.setId( utilisateur.getId() );</span>
+<span class="nc" id="L82">            utilisateurDtoResponse.setNom( utilisateur.getNom() );</span>
+<span class="nc" id="L83">            utilisateurDtoResponse.setPrenom( utilisateur.getPrenom() );</span>
+<span class="nc" id="L84">            utilisateurDtoResponse.setEmail( utilisateur.getEmail() );</span>
+<span class="nc" id="L85">            utilisateurDtoResponse.setTelephone( utilisateur.getTelephone() );</span>
+<span class="nc" id="L86">            utilisateurDtoResponse.setAdresse( utilisateur.getAdresse() );</span>
+<span class="nc" id="L87">            utilisateurDtoResponse.setRole( utilisateur.getRole() );</span>
+<span class="nc" id="L88">            utilisateurDtoResponse.setActif( utilisateur.getActif() );</span>
+
+<span class="nc" id="L90">            return utilisateurDtoResponse;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
