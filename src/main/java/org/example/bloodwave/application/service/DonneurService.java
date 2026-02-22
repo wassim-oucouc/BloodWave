@@ -12,4 +12,5 @@ public interface DonneurService{
     public DonneurDtoResponse registerDonneur(DonneurDTO dto);
     public DonneurDtoResponse updateGroupSanguinById(Long id, GroupeSanguin groupeSanguin);
     public Donneur findDonneurById(Long id);
+    public boolean isEligible(Long id);
 }

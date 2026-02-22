@@ -12,6 +12,10 @@ import org.example.bloodwave.application.service.DonneurService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+
 
 @Service
 @AllArgsConstructor
@@ -54,6 +58,41 @@ public class DonneurServiceImpl implements DonneurService {
                 .orElseThrow(()
                         -> new DonneurNotFoundException("donneur not found by id : " + id));
 
+    }
+
+    public boolean isEligible(Long id)
+    {
+       Donneur donor =  this.donneurRepository
+                .findById(id)
+                .orElseThrow(() -> new DonneurNotFoundException("donner not found with id" + id));
+
+        int age = Period.between(donor.getGetDateOfBirth() ,LocalDate.now()).getYears();
+
+        if (age < 18 || age > 65)
+            return false;
+
+        if (donor.getWeight() < 50)
+            return false;
+
+        if (donor.getLastDonationDate() != null) {
+            long weeks = ChronoUnit.WEEKS.between(
+                    donor.getLastDonationDate(),
+                    LocalDate.now()
+            );
+            if (weeks < 8)
+                return false;
+        }
+
+        if (Boolean.TRUE.equals(donor.getAMaladieChronique()))
+            return false;
+
+        if (Boolean.TRUE.equals(donor.getEstSousTraitement()))
+            return false;
+
+        if (Boolean.TRUE.equals(donor.getAInfectionRecente()))
+            return false;
+
+        return true;
     }
 
 }
