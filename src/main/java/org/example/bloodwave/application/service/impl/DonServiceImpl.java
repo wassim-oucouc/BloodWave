@@ -6,6 +6,7 @@ import org.example.bloodwave.application.exceptions.DonNotFoundException;
 import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
 import org.example.bloodwave.application.mapper.DonMapper;
 import org.example.bloodwave.application.service.DonService;
+import org.example.bloodwave.application.service.DonneurService;
 import org.example.bloodwave.domain.entity.Don;
 import org.example.bloodwave.domain.entity.Donneur;
 import org.example.bloodwave.domain.enumeration.StatutDon;
@@ -26,6 +27,7 @@ public class DonServiceImpl implements DonService {
     private DonRepository donRepository;
     private DonneurRepository donneurRepository;
     private DonMapper donMapper;
+    private DonneurService donneurService;
 
     public List<DonDtoResponse> getDonationHistoryById(Long id) {
         Donneur donneur = this.donneurRepository.findById(id).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id" + id));
@@ -33,7 +35,15 @@ public class DonServiceImpl implements DonService {
     }
 
     public DonDtoResponse createDonation(DonDTO dto) {
-        this.donneurRepository.findById(dto.getDonneurId()).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id :" + dto.getDonneurId()));
+      Donneur donneur =   this.donneurRepository.findById(dto.getDonneurId()).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id :" + dto.getDonneurId()));
+
+        boolean eligibility = donneurService.isEligible(donneur.getId());
+
+        if (!eligibility) {
+            throw new IllegalStateException(
+                    "Donor not eligible: "
+            );
+        }
 
         Don don = this.donMapper.toEntity(dto);
 
