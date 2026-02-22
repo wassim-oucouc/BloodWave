@@ -7,6 +7,7 @@ import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
 import org.example.bloodwave.application.mapper.DonMapper;
 import org.example.bloodwave.application.service.DonService;
 import org.example.bloodwave.application.service.DonneurService;
+import org.example.bloodwave.application.service.EmailService;
 import org.example.bloodwave.domain.entity.Don;
 import org.example.bloodwave.domain.entity.Donneur;
 import org.example.bloodwave.domain.enumeration.StatutDon;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -49,6 +52,7 @@ public class DonServiceImpl implements DonService {
 
         don.setStatut(StatutDon.PLANIFIE);
 
+
         Don donCreated = this.donRepository.save(don);
 
         return this.donMapper.toDtoResponse(donCreated);
@@ -66,7 +70,12 @@ public class DonServiceImpl implements DonService {
 
         donFound.setStatut(StatutDon.CONFIRME);
 
-        donneur.setNombreDonsTotaux(donneur.getNombreDonsTotaux() + 1);
+        donneur
+                .setNombreDonsTotaux(donneur.getNombreDonsTotaux() + 1);
+
+        donneur
+                .setLastDonationDate(LocalDate
+                        .now());
 
         Don donUpdated = this.donRepository.save(donFound);
 

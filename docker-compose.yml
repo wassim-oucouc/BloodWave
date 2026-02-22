@@ -15,6 +15,15 @@ services:
       - "5481:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: bloodwave-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
   # =======================
   # PgAdmin
   # =======================
@@ -31,3 +40,4 @@ services:
       - db
 volumes:
   postgres_data:
+  redis-data:

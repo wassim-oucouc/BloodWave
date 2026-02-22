@@ -14,6 +14,7 @@ import org.example.bloodwave.domain.entity.InscriptionCollecte;
 import org.example.bloodwave.domain.enumeration.StatutCollecte;
 import org.example.bloodwave.domain.repository.CollecteSangRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,6 +75,7 @@ public class CollectSangServiceImpl implements CollecteSangService {
         return collecteSangMapper.toDtoResponse(collecte);
     }
 
+    @Cacheable("collections")
     public List<CollecteSangDtoResponse> getAllCollectes() {
         return collecteSangRepository.findAll()
                 .stream()

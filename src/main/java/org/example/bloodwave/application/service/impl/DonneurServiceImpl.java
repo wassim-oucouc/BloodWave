@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 
 @Service
@@ -95,4 +96,9 @@ public class DonneurServiceImpl implements DonneurService {
         return true;
     }
 
+
+    public List<DonneurDtoResponse> getDonneursByCity(String city)
+    {
+        return this.donneurRepository.findDonneurByVille(city).stream().map(donneurMapper::toDtoResponse).toList();
+    }
 }
