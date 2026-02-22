@@ -70,4 +70,16 @@ public class DemandeSangController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/demandes/{id}/approve")
+    public ResponseEntity<String> approve(@PathVariable Long id) {
+        demandeSangService.approveDemande(id);
+        return ResponseEntity.ok("Demande approved successfully");
+    }
+
+    @PostMapping("/demandes/{id}/reject")
+    public ResponseEntity<String> reject(@PathVariable Long id) {
+        demandeSangService.rejectDemande(id);
+        return ResponseEntity.ok("Demande rejected successfully");
+    }
 }

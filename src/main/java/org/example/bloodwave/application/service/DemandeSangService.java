@@ -20,4 +20,11 @@ public interface DemandeSangService {
         DemandeSangDtoResponse getById(Long id);
 
     DemandeSangDtoResponse updateStatut(Long id, StatutDemande statut);
+
+    public void approveDemande(Long demandeId);
+
+    public void rejectDemande(Long demandeId);
+
+
+
 }
