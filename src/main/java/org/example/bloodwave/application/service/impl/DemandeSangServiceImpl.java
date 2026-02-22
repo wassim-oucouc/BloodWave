@@ -3,8 +3,10 @@ package org.example.bloodwave.application.service.impl;
 import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.DemandeSangDTO;
 import org.example.bloodwave.application.dto.response.DemandeSangDtoResponse;
+import org.example.bloodwave.application.exceptions.DemandeSangNotFoundException;
 import org.example.bloodwave.application.mapper.DemandeSangMapper;
 import org.example.bloodwave.application.service.DemandeSangService;
+import org.example.bloodwave.application.service.EmailService;
 import org.example.bloodwave.domain.entity.DemandeSang;
 import org.example.bloodwave.domain.entity.Demandeur;
 import org.example.bloodwave.domain.entity.Hopital;
@@ -24,6 +26,7 @@ public class DemandeSangServiceImpl implements DemandeSangService {
     private final DemandeurRepository demandeurRepository;
     private final HopitalRepository hopitalRepository;
     private final DemandeSangMapper demandeSangMapper;
+    private final EmailService emailService;
 
     @Override
     public DemandeSangDtoResponse create(DemandeSangDTO dto) {
@@ -62,7 +65,7 @@ public class DemandeSangServiceImpl implements DemandeSangService {
     public DemandeSangDtoResponse getById(Long id) {
 
         DemandeSang demandeSang = demandeSangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
         return demandeSangMapper.toDtoResponse(demandeSang);
     }
@@ -82,13 +85,53 @@ public class DemandeSangServiceImpl implements DemandeSangService {
     public DemandeSangDtoResponse updateStatut(Long id, StatutDemande statut) {
 
         DemandeSang demandeSang = demandeSangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
         demandeSang.setStatut(statut);
 
         DemandeSang updated = demandeSangRepository.save(demandeSang);
 
         return demandeSangMapper.toDtoResponse(updated);
+    }
+
+    public void approveDemande(Long demandeId)
+    {
+        DemandeSang demandeSang = demandeSangRepository.findById(demandeId)
+                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
+
+        demandeSang.setStatut(StatutDemande.ACCEPTEE);
+
+        this.emailService.sendEmail(demandeSang.getDemandeur().getEmail(),
+                "Your Blood Request Has Been Approved",
+                "Hello "+ demandeSang.getDemandeur().getNom() + ",\\n\\n\" +\n" +
+                        "    \"Your blood request with ID \" + demande.getId() + \" has been APPROVED.\\n\" +\n" +
+                        "    \"Please follow any instructions provided by the hospital.\\n\\n\" +\n" +
+                        "    \"Thank you for using BloodWave.\"");
+
+        this.demandeSangRepository.save(demandeSang);
+
+    }
+
+
+    public void rejectDemande(Long demandeId)
+    {
+                DemandeSang
+                demandeSang =
+                demandeSangRepository
+                .findById(demandeId)
+                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
+
+        demandeSang.setStatut(StatutDemande.REFUSEE);
+
+        this.emailService.sendEmail(demandeSang.getDemandeur().getEmail(),
+                "Your Blood Request Has Been Refused",
+                "Hello "+ demandeSang.getDemandeur().getNom() + ",\\n\\n\" +\n" +
+                        "    \"Your blood request with ID \" + demande.getId() + \" has been REFUSED.\\n\" +\n" +
+                        "    \"Please follow any instructions provided by the hospital.\\n\\n\" +\n" +
+                        "    \"Thank you for using BloodWave.\"");
+
+        this.demandeSangRepository.save(demandeSang);
+
     }
 
 }
