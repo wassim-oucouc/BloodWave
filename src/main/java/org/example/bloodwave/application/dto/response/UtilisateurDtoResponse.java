@@ -12,6 +12,7 @@ public abstract class UtilisateurDtoResponse {
     private String email;
     private String telephone;
     private String adresse;
+    private String ville;
     private RoleType role;
     private Boolean actif;
 }

@@ -7,8 +7,12 @@ import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
 import org.example.bloodwave.application.mapper.DonMapper;
 import org.example.bloodwave.application.service.DonService;
 import org.example.bloodwave.application.service.DonneurService;
+import org.example.bloodwave.application.service.EmailService;
+import org.example.bloodwave.application.service.StockSangService;
 import org.example.bloodwave.domain.entity.Don;
 import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.domain.entity.StockSang;
+import org.example.bloodwave.domain.entity.UniteSang;
 import org.example.bloodwave.domain.enumeration.StatutDon;
 import org.example.bloodwave.domain.repository.DonRepository;
 import org.example.bloodwave.domain.repository.DonneurRepository;
@@ -16,7 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.random.RandomGenerator;
 
 
 @AllArgsConstructor
@@ -28,6 +35,7 @@ public class DonServiceImpl implements DonService {
     private DonneurRepository donneurRepository;
     private DonMapper donMapper;
     private DonneurService donneurService;
+    private StockSangService stockSangService;
 
     public List<DonDtoResponse> getDonationHistoryById(Long id) {
         Donneur donneur = this.donneurRepository.findById(id).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id" + id));
@@ -49,6 +57,7 @@ public class DonServiceImpl implements DonService {
 
         don.setStatut(StatutDon.PLANIFIE);
 
+
         Don donCreated = this.donRepository.save(don);
 
         return this.donMapper.toDtoResponse(donCreated);
@@ -66,10 +75,24 @@ public class DonServiceImpl implements DonService {
 
         donFound.setStatut(StatutDon.CONFIRME);
 
-        donneur.setNombreDonsTotaux(donneur.getNombreDonsTotaux() + 1);
+        donneur
+                .setNombreDonsTotaux(donneur.getNombreDonsTotaux() + 1);
+
+        donneur
+                .setLastDonationDate(LocalDate
+                        .now());
 
         Don donUpdated = this.donRepository.save(donFound);
+        StockSang stockSang = this.stockSangService
+                .getStockSangByGroupeSang(donFound.getDonneur().getGroupeSanguin());
 
+        UniteSang uniteSang = new UniteSang();
+        uniteSang.setDon(donFound);
+        uniteSang.setStockSang(stockSang);
+        uniteSang.setDatePrelevement(LocalDate.now());
+        uniteSang.setNumeroUnite("UN-" + );
+
+        this.stockSangService.ajouterAuStock(stockSang,donFound.getQuantite(),);
         return this.donMapper.toDtoResponse(donUpdated);
 
     }

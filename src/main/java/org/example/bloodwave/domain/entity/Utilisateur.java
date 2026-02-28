@@ -20,8 +20,10 @@ public abstract class Utilisateur{
     private String motDePasse;
     private String telephone;
     private String adresse;
+    private String ville;
 
-    @Enumerated(EnumType.STRING)
+
+ @Enumerated(EnumType.STRING)
     private RoleType role;
 
     private Boolean actif;

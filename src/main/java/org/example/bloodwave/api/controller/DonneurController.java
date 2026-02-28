@@ -34,7 +34,7 @@ public class DonneurController {
     }
 
     @GetMapping("/donations/{id}")
-    public ResponseEntity<List<DonDtoResponse>> getDonationHistory(@PathVariable("id") Long id)
+    public ResponseEntity<List<DonDtoResponse>> getDonationHistoryByDonneurId(@PathVariable("id") Long id)
     {
         return ResponseEntity.ok().body(this.donService.getDonationHistoryById(id));
     }
@@ -66,6 +66,18 @@ public class DonneurController {
         CollecteSangDtoResponse collecte = collecteSangService.getCollecteById(collecteId);
         return ResponseEntity.ok(collecte);
     }
+
+
+    @GetMapping("/donneurs/filter/{city}")
+    public ResponseEntity<List<DonneurDtoResponse>> filterDoneursByCity(@PathVariable("city") String city)
+    {
+        return ResponseEntity.ok().body(this.donneurService.getDonneursByCity(city));
+    }
+
+
+
+
+
 
 
 
