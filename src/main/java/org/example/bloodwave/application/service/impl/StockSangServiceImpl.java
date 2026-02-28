@@ -1,6 +1,7 @@
 package org.example.bloodwave.application.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.exceptions.StockSangNotFoundException;
 import org.example.bloodwave.application.service.StockSangService;
 import org.example.bloodwave.domain.entity.Hopital;
 import org.example.bloodwave.domain.entity.MouvementStock;
@@ -65,5 +66,10 @@ public class StockSangServiceImpl implements StockSangService {
         m.setUniteSang(unite);
         m.setDate(LocalDateTime.now());
         mouvementStockRepository.save(m);
+    }
+
+    public StockSang getStockSangByGroupeSang(GroupeSanguin groupeSanguin)
+    {
+        return this.stockSangRepository.findStockSangByGroupeSanguin(groupeSanguin).orElseThrow(() ->new StockSangNotFoundException("Stock Sang Not Found with groupeSanguin : " +  groupeSanguin));
     }
 }

@@ -8,8 +8,11 @@ import org.example.bloodwave.application.mapper.DonMapper;
 import org.example.bloodwave.application.service.DonService;
 import org.example.bloodwave.application.service.DonneurService;
 import org.example.bloodwave.application.service.EmailService;
+import org.example.bloodwave.application.service.StockSangService;
 import org.example.bloodwave.domain.entity.Don;
 import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.domain.entity.StockSang;
+import org.example.bloodwave.domain.entity.UniteSang;
 import org.example.bloodwave.domain.enumeration.StatutDon;
 import org.example.bloodwave.domain.repository.DonRepository;
 import org.example.bloodwave.domain.repository.DonneurRepository;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.random.RandomGenerator;
 
 
 @AllArgsConstructor
@@ -31,6 +35,7 @@ public class DonServiceImpl implements DonService {
     private DonneurRepository donneurRepository;
     private DonMapper donMapper;
     private DonneurService donneurService;
+    private StockSangService stockSangService;
 
     public List<DonDtoResponse> getDonationHistoryById(Long id) {
         Donneur donneur = this.donneurRepository.findById(id).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id" + id));
@@ -78,7 +83,16 @@ public class DonServiceImpl implements DonService {
                         .now());
 
         Don donUpdated = this.donRepository.save(donFound);
+        StockSang stockSang = this.stockSangService
+                .getStockSangByGroupeSang(donFound.getDonneur().getGroupeSanguin());
 
+        UniteSang uniteSang = new UniteSang();
+        uniteSang.setDon(donFound);
+        uniteSang.setStockSang(stockSang);
+        uniteSang.setDatePrelevement(LocalDate.now());
+        uniteSang.setNumeroUnite("UN-" + );
+
+        this.stockSangService.ajouterAuStock(stockSang,donFound.getQuantite(),);
         return this.donMapper.toDtoResponse(donUpdated);
 
     }
