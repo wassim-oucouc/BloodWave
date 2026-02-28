@@ -20,5 +20,7 @@ public interface StockSangService {
 
     public List<StockSang> getAllStocks();
 
+    public StockSang getStockSangByGroupeSang(GroupeSanguin groupeSanguin);
+
 
 }

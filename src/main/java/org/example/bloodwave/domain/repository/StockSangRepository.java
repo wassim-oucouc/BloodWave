@@ -12,4 +12,6 @@ import java.util.Optional;
 @Repository
 public interface StockSangRepository extends JpaRepository<StockSang,Long> {
     Optional<StockSang> findByHopitalAndGroupeSanguin(Hopital hopital, GroupeSanguin groupe);
+
+    Optional<StockSang> findStockSangByGroupeSanguin(GroupeSanguin groupeSanguin);
 }
