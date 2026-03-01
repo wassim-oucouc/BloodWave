@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 import java.util.random.RandomGenerator;
 
 
@@ -85,14 +86,16 @@ public class DonServiceImpl implements DonService {
         Don donUpdated = this.donRepository.save(donFound);
         StockSang stockSang = this.stockSangService
                 .getStockSangByGroupeSang(donFound.getDonneur().getGroupeSanguin());
+        int randomNumber = (int)(Math.random() * 900000) + 100000;
 
         UniteSang uniteSang = new UniteSang();
         uniteSang.setDon(donFound);
         uniteSang.setStockSang(stockSang);
         uniteSang.setDatePrelevement(LocalDate.now());
-        uniteSang.setNumeroUnite("UN-" + );
+        uniteSang.setNumeroUnite("UN-" + randomNumber);
+        uniteSang.setDateExpiration(LocalDate.now().plusDays(46));
 
-        this.stockSangService.ajouterAuStock(stockSang,donFound.getQuantite(),);
+        this.stockSangService.ajouterAuStock(stockSang,Integer.parseInt(String.valueOf(donFound.getQuantite())),uniteSang);
         return this.donMapper.toDtoResponse(donUpdated);
 
     }

@@ -14,73 +14,66 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+/**
+ * REST Controller responsible for donor management and interactions with blood collections.
+ */
 @RestController
 @RequestMapping("/api/donneur")
 @AllArgsConstructor
 public class DonneurController {
 
-    public final DonneurService donneurService;
+    private final DonneurService donneurService;
     private final DonService donService;
     private final CollecteSangService collecteSangService;
 
-
+    /** Updates donor blood group by ID */
     @PutMapping("/{id}")
-    public ResponseEntity<DonneurDtoResponse> updateGroupeSanguinById(@PathVariable("id") Long id, @RequestBody GroupeSanguin groupeSanguin)
-    {
-       DonneurDtoResponse donneurDtoResponse =  this.donneurService.updateGroupSanguinById(id,groupeSanguin);
-
-       return ResponseEntity.ok().body(donneurDtoResponse);
+    public ResponseEntity<DonneurDtoResponse> updateGroupeSanguinById(
+            @PathVariable Long id,
+            @RequestBody GroupeSanguin groupeSanguin
+    ) {
+        DonneurDtoResponse donneurDtoResponse = donneurService.updateGroupSanguinById(id, groupeSanguin);
+        return ResponseEntity.ok(donneurDtoResponse);
     }
 
+    /** Retrieves donation history for a donor */
     @GetMapping("/donations/{id}")
-    public ResponseEntity<List<DonDtoResponse>> getDonationHistoryByDonneurId(@PathVariable("id") Long id)
-    {
-        return ResponseEntity.ok().body(this.donService.getDonationHistoryById(id));
+    public ResponseEntity<List<DonDtoResponse>> getDonationHistoryByDonneurId(@PathVariable Long id) {
+        return ResponseEntity.ok(donService.getDonationHistoryById(id));
     }
 
+    /** Donor joins a blood collection */
     @PostMapping("/{donneurId}/collectes/{collecteId}/join")
     public ResponseEntity<CollecteSangDtoResponse> joinCollecte(
             @PathVariable Long donneurId,
             @PathVariable Long collecteId
     ) {
-        Donneur donneur = this.donneurService.findDonneurById(donneurId);
+        Donneur donneur = donneurService.findDonneurById(donneurId);
         CollecteSangDtoResponse joined = collecteSangService.joinCollecte(collecteId, donneur);
         return ResponseEntity.ok(joined);
     }
 
+    /** Donor cancels participation in a blood collection */
     @PostMapping("/{donneurId}/collectes/{collecteId}/cancel")
     public ResponseEntity<CollecteSangDtoResponse> cancelParticipation(
             @PathVariable Long donneurId,
             @PathVariable Long collecteId
     ) {
-        Donneur donneur = this.donneurService.findDonneurById(donneurId);
+        Donneur donneur = donneurService.findDonneurById(donneurId);
         CollecteSangDtoResponse canceled = collecteSangService.cancelParticipation(collecteId, donneur);
         return ResponseEntity.ok(canceled);
     }
 
+    /** Retrieves blood collection details */
     @GetMapping("/{donneurId}/collectes/{collecteId}")
-    public ResponseEntity<CollecteSangDtoResponse> getCollecteDetails(
-            @PathVariable Long collecteId
-    ) {
+    public ResponseEntity<CollecteSangDtoResponse> getCollecteDetails(@PathVariable Long collecteId) {
         CollecteSangDtoResponse collecte = collecteSangService.getCollecteById(collecteId);
         return ResponseEntity.ok(collecte);
     }
 
-
+    /** Filters donors by city */
     @GetMapping("/donneurs/filter/{city}")
-    public ResponseEntity<List<DonneurDtoResponse>> filterDoneursByCity(@PathVariable("city") String city)
-    {
-        return ResponseEntity.ok().body(this.donneurService.getDonneursByCity(city));
+    public ResponseEntity<List<DonneurDtoResponse>> filterDoneursByCity(@PathVariable String city) {
+        return ResponseEntity.ok(donneurService.getDonneursByCity(city));
     }
-
-
-
-
-
-
-
-
-
-
 }
