@@ -12,7 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+/**
+ * REST Controller responsible for managing blood donations.
+ *
+ * Base URL: /api/dons
+ */
 @RestController
 @RequestMapping("/api/dons")
 public class DonController {
@@ -24,30 +28,35 @@ public class DonController {
         this.donService = donService;
     }
 
+    /** Creates a new donation */
     @PostMapping
     public ResponseEntity<DonDtoResponse> createDon(@RequestBody DonDTO dto) {
         DonDtoResponse created = donService.createDonation(dto);
         return ResponseEntity.ok(created);
     }
 
+    /** Approves a donation by ID */
     @PutMapping("/{id}/approve")
     public ResponseEntity<DonDtoResponse> approveDon(@PathVariable Long id) {
         DonDtoResponse approved = donService.approveDonation(id);
         return ResponseEntity.ok(approved);
     }
 
+    /** Cancels a donation by ID */
     @PutMapping("/{id}/cancel")
     public ResponseEntity<DonDtoResponse> cancelDon(@PathVariable Long id) {
         DonDtoResponse canceled = donService.cancelDonById(id);
         return ResponseEntity.ok(canceled);
     }
 
+    /** Retrieves all donations with the specified status */
     @GetMapping("/status/{statut}")
     public ResponseEntity<List<DonDtoResponse>> getDonsByStatus(@PathVariable StatutDon statut) {
         List<DonDtoResponse> dons = donService.getDonsByStatus(statut);
         return ResponseEntity.ok(dons);
     }
 
+    /** Retrieves donations with the specified status, pageable */
     @GetMapping("/status/{statut}/pageable")
     public ResponseEntity<Page<DonDtoResponse>> getDonsByStatusPageable(
             @RequestParam int size,
@@ -58,12 +67,14 @@ public class DonController {
         return ResponseEntity.ok(dons);
     }
 
+    /** Retrieves donation history for a donor */
     @GetMapping("/history/{donneurId}")
     public ResponseEntity<List<DonDtoResponse>> getDonationHistory(@PathVariable Long donneurId) {
         List<DonDtoResponse> history = donService.getDonationHistoryById(donneurId);
         return ResponseEntity.ok(history);
     }
 
+    /** Retrieves a donation by ID */
     @GetMapping("/{id}")
     public ResponseEntity<DonDtoResponse> getDonById(@PathVariable Long id) {
         DonDtoResponse don = donService.getDonationHistoryById(id)

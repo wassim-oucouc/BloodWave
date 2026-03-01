@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+/**
+ * REST Controller responsible for managing user profiles.
+ */
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileController {
@@ -18,22 +20,25 @@ public class ProfileController {
         this.utilisateurService = utilisateurService;
     }
 
+    /** Retrieves a user profile by ID */
     @GetMapping("/{id}")
-    public ResponseEntity<UtilisateurDtoResponse> getProfile(@PathVariable("id") Long id) {
+    public ResponseEntity<UtilisateurDtoResponse> getProfile(@PathVariable Long id) {
         return ResponseEntity.ok(utilisateurService.getUtilisateurById(id));
     }
 
+    /** Updates the user profile by ID */
     @PutMapping("/{id}")
     public ResponseEntity<UtilisateurDtoResponse> updateProfile(
-            @PathVariable("id") Long id,
+            @PathVariable Long id,
             @RequestBody UtilisateurDTO dto
     ) {
         return ResponseEntity.ok(utilisateurService.updateUtilisateurById(id, dto));
     }
 
+    /** Changes the user's password */
     @PutMapping("/password")
     public ResponseEntity<String> changePassword(
-            @PathVariable("id") Long id,
+            @PathVariable Long id,
             @RequestBody Map<String, String> passwords
     ) {
         utilisateurService.changePassword(
@@ -43,5 +48,4 @@ public class ProfileController {
         );
         return ResponseEntity.ok("Password updated successfully");
     }
-
 }
