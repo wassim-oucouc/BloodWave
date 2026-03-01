@@ -14,12 +14,14 @@ import org.example.bloodwave.domain.enumeration.StatutDemande;
 import org.example.bloodwave.domain.repository.DemandeSangRepository;
 import org.example.bloodwave.domain.repository.DemandeurRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
+@Service
 public class DemandeSangServiceImpl implements DemandeSangService {
 
     private final DemandeSangRepository demandeSangRepository;

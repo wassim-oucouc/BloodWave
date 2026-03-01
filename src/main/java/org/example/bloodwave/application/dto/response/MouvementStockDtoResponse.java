@@ -1,9 +1,11 @@
 package org.example.bloodwave.application.dto.response;
 
+import lombok.Data;
 import org.example.bloodwave.domain.enumeration.TypeMouvement;
 
 import java.time.LocalDateTime;
 
+@Data
 public class MouvementStockDtoResponse {
 
     private Long id;

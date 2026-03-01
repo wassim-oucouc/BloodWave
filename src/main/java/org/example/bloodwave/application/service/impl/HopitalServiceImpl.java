@@ -1,16 +1,28 @@
 package org.example.bloodwave.application.service.impl;
 
 import org.example.bloodwave.application.dto.request.HopitalDTO;
+import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
 import org.example.bloodwave.application.dto.response.HopitalDtoResponse;
+import org.example.bloodwave.application.dto.response.StockSangDtoResponse;
+import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
+import org.example.bloodwave.application.mapper.DonneurMapper;
+import org.example.bloodwave.application.mapper.StockSangMapper;
+import org.example.bloodwave.application.service.EmailService;
 import org.example.bloodwave.domain.entity.Hopital;
 import org.example.bloodwave.application.mapper.HopitalMapper;
 import org.example.bloodwave.domain.entity.StockSang;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
+import org.example.bloodwave.domain.repository.DonneurRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
 import org.example.bloodwave.application.service.HopitalService;
 import org.example.bloodwave.domain.repository.StockSangRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.example.bloodwave.domain.enumeration.GroupeSanguin.*;
 
 
 @Service
@@ -19,8 +31,12 @@ public class HopitalServiceImpl implements HopitalService {
 
     public HopitalMapper hopitalMapper;
     public PasswordEncoder passwordEncoder;
-    public HopitalRepository hopitalAuthRepository;
+    public HopitalRepository hopitalRepository;
     public StockSangRepository stockSangRepository;
+    public StockSangMapper stockSangMapper;
+    public DonneurRepository donneurRepository;
+    public DonneurMapper donneurMapper;
+    public EmailService emailService;
 
 
 
@@ -32,7 +48,7 @@ public class HopitalServiceImpl implements HopitalService {
 
         hopital.setMotDePasse(passwordHashed);
 
-        Hopital hopitalCreated =  this.hopitalAuthRepository.save(hopital);
+        Hopital hopitalCreated =  this.hopitalRepository.save(hopital);
 
         for (GroupeSanguin gs : GroupeSanguin.values()) {
             StockSang stock = new StockSang();
@@ -45,4 +61,53 @@ public class HopitalServiceImpl implements HopitalService {
 
         return this.hopitalMapper.toDtoResponse(hopitalCreated);
     }
-}
+
+    public Set<GroupeSanguin> getCompatibleGroups(GroupeSanguin groupe)
+    {
+        return switch (groupe) {
+
+            case O_NEG -> Set.of(O_NEG);
+
+            case O_POS -> Set.of(O_POS, O_NEG);
+
+            case A_NEG -> Set.of(A_NEG, O_NEG);
+
+            case A_POS -> Set.of(A_POS, A_NEG, O_POS, O_NEG);
+
+            case B_NEG -> Set.of(B_NEG, O_NEG);
+
+            case B_POS -> Set.of(B_POS, B_NEG, O_POS, O_NEG);
+
+            case AB_NEG -> Set.of(AB_NEG, A_NEG, B_NEG, O_NEG);
+
+            case AB_POS -> Set.of(
+                    A_POS, A_NEG,
+                    B_POS, B_NEG,
+                    O_POS, O_NEG,
+                    AB_POS, AB_NEG
+            );
+        };
+    }
+
+    public List<DonneurDtoResponse> findCompatibleDonneurs(GroupeSanguin groupe) {
+      Set<GroupeSanguin> groupeSanguins = this.getCompatibleGroups(groupe);
+     return this.donneurRepository
+             .findByGroupeSanguinInAndDisponibleTrue(groupeSanguins)
+             .stream().map(donneurMapper::toDtoResponse)
+             .toList();
+    }
+
+    public List<StockSangDtoResponse> getStockForConnectedHospital(Long hopitalId) {
+
+      Hopital hopital =   this.hopitalRepository
+                .findById(hopitalId)
+                .orElseThrow(() ->
+                        new HopitalNotFoundException("hopital not found with id" + hopitalId));
+
+return   stockSangRepository
+        .findByHopital(hopital)
+        .stream()
+        .map(stockSangMapper::toDtoResponse)
+        .toList();
+    }
+    }
