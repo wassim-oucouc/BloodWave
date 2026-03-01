@@ -16,5 +16,5 @@ public class MouvementStockDTO {
     private Integer quantite;
     private LocalDateTime date;
 
-    private StockSang stockSang;
+    private Long stockSangId;
 }

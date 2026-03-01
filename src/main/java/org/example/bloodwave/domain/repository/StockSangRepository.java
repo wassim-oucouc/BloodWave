@@ -6,6 +6,7 @@ import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -14,4 +15,6 @@ public interface StockSangRepository extends JpaRepository<StockSang,Long> {
     Optional<StockSang> findByHopitalAndGroupeSanguin(Hopital hopital, GroupeSanguin groupe);
 
     Optional<StockSang> findStockSangByGroupeSanguin(GroupeSanguin groupeSanguin);
+
+    List<StockSang> findByHopital(Hopital hopital);
 }
