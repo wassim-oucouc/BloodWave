@@ -19,6 +19,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * REST Controller responsible for authentication and registration management.
+ *
+ * Base URL: /api/auth
+ *
+ * Handles:
+ * - Registration (Donor, Requester, Hospital)
+ * - Login (JWT Authentication)
+ * - Refresh token generation
+ * - Password reset functionality
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -32,8 +43,15 @@ public class AuthController {
     private final AuthService authService;
 
     @Autowired
-    public AuthController(DonneurService donneurService, DemandeurService demandeurService, HopitalService hopitalService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, RefreshTokenService refreshTokenService, AuthService authService)
-    {
+    public AuthController(
+            DonneurService donneurService,
+            DemandeurService demandeurService,
+            HopitalService hopitalService,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil,
+            RefreshTokenService refreshTokenService,
+            AuthService authService
+    ) {
         this.donneurService = donneurService;
         this.demandeurService = demandeurService;
         this.hopitalService = hopitalService;
@@ -43,56 +61,74 @@ public class AuthController {
         this.authService = authService;
     }
 
+    /**
+     * Registers a new donor.
+     */
     @PostMapping("/register/donneur")
-    public ResponseEntity<DonneurDtoResponse> registerDonneur(@RequestBody DonneurDTO dto)
-    {
-        return ResponseEntity.ok().body(this.donneurService.registerDonneur(dto));
+    public ResponseEntity<DonneurDtoResponse> registerDonneur(@RequestBody DonneurDTO dto) {
+        return ResponseEntity.ok(donneurService.registerDonneur(dto));
     }
 
+    /**
+     * Registers a new requester.
+     */
     @PostMapping("/register/demandeur")
-    public ResponseEntity<DemandeurDtoResponse> registerDemandeur(@RequestBody DemandeurDTO dto)
-    {
-        return ResponseEntity.ok().body(this.demandeurService.registerDemandeur(dto));
+    public ResponseEntity<DemandeurDtoResponse> registerDemandeur(@RequestBody DemandeurDTO dto) {
+        return ResponseEntity.ok(demandeurService.registerDemandeur(dto));
     }
 
+    /**
+     * Registers a new hospital.
+     */
     @PostMapping("/register/hopital")
-    public ResponseEntity<HopitalDtoResponse> registerHopital(@RequestBody HopitalDTO dto)
-    {
-        return ResponseEntity.ok().body(this.hopitalService.registerHopital(dto));
+    public ResponseEntity<HopitalDtoResponse> registerHopital(@RequestBody HopitalDTO dto) {
+        return ResponseEntity.ok(hopitalService.registerHopital(dto));
     }
 
+    /**
+     * Authenticates user and generates access + refresh tokens.
+     */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest)
-    {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-        this.authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword())
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
         );
 
-        Utilisateur utilisateur =  this.authService.getUserByEmail(loginRequest.getEmail());
-        String token =   this.jwtUtil.generateToken(utilisateur.getEmail(),utilisateur);
-        RefreshToken refreshToken =  this.refreshTokenService.create(utilisateur.getEmail());
+        Utilisateur utilisateur = authService.getUserByEmail(loginRequest.getEmail());
+
+        String accessToken = jwtUtil.generateToken(utilisateur.getEmail(), utilisateur);
+        RefreshToken refreshToken = refreshTokenService.create(utilisateur.getEmail());
 
         Map<String, String> response = Map.of(
-                "accessToken", token,
+                "accessToken", accessToken,
                 "refreshToken", refreshToken.getToken()
         );
 
         return ResponseEntity.ok(response);
-
     }
 
+    /**
+     * Sends password reset email.
+     */
     @PostMapping("/reset-password/{email}")
-    public ResponseEntity<String> SendEmailResetPassword(@PathVariable("email") String email)
-    {
-        this.authService.resetPasswordByEmail(email);
-        return ResponseEntity.ok().body("email reset password is sent");
+    public ResponseEntity<String> sendEmailResetPassword(@PathVariable String email) {
+        authService.resetPasswordByEmail(email);
+        return ResponseEntity.ok("Reset password email sent successfully.");
     }
 
+    /**
+     * Resets password using reset token.
+     */
     @PutMapping("/reset-password/token/{token}")
-    public ResponseEntity<String> resetPasswordByToken(@PathVariable("token") String token,@RequestBody String password)
-    {
-        this.authService.resetPasswordByToken(token,password);
-        return ResponseEntity.ok().body("Your Password is reset success");
+    public ResponseEntity<String> resetPasswordByToken(
+            @PathVariable String token,
+            @RequestBody String password
+    ) {
+        authService.resetPasswordByToken(token, password);
+        return ResponseEntity.ok("Password reset successfully.");
     }
 }
