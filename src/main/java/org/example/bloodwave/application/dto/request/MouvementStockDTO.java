@@ -17,4 +17,6 @@ public class MouvementStockDTO {
     private LocalDateTime date;
 
     private Long stockSangId;
+
+    private long uniteSangId;
 }

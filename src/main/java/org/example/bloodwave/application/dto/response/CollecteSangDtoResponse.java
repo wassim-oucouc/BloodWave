@@ -4,6 +4,7 @@ import lombok.Data;
 import org.example.bloodwave.domain.enumeration.StatutCollecte;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -11,7 +12,7 @@ public class CollecteSangDtoResponse {
 
     private Long id;
 
-    private LocalDate dateCollecte;
+    private LocalDateTime dateCollecte;
     private String lieu;
     private Integer capaciteMax;
 

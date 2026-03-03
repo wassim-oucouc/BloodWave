@@ -3,8 +3,11 @@ package org.example.bloodwave.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
 import org.example.bloodwave.application.dto.response.StockSangDtoResponse;
+import org.example.bloodwave.application.dto.response.UniteSangDtoResponse;
 import org.example.bloodwave.application.service.HopitalService;
+import org.example.bloodwave.application.service.UniteSangService;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
+import org.example.bloodwave.domain.enumeration.StatutUnite;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,7 @@ import java.util.List;
 public class HopitalController {
 
     private final HopitalService hopitalService;
+    private final UniteSangService uniteSangService;
 
     /**
      * Get compatible donors based on blood group.
@@ -55,5 +59,35 @@ public class HopitalController {
         return ResponseEntity.ok(
                 hopitalService.getStockForConnectedHospital(hopitalId)
         );
+    }
+
+    /**
+     * Envoie un email à un utilisateur depuis le contexte de l'hôpital.
+     *
+     * @param userId  L'identifiant de l'utilisateur destinataire.
+     * @param subject Le sujet de l'email.
+     * @param object  Le contenu du message/email.
+     * @return ResponseEntity avec un message de succès si l'email est envoyé.
+     */
+    @PostMapping("/send-message-to-user/{id}")
+    public ResponseEntity<String> sendMessageToUserFromHopital(
+            @PathVariable("id") Long userId,
+            @RequestParam("subject") String subject,
+            @RequestParam("object") String object
+    ) {
+        hopitalService.sendMessageToUser(subject, object, userId);
+
+        return ResponseEntity.ok("Email sent successfully to user with ID " + userId + " from Hopital");
+    }
+
+
+    @PatchMapping("/unites/{id}/statut")
+    public ResponseEntity<UniteSangDtoResponse> updateStatusUnite(
+            @PathVariable Long id,
+            @RequestParam StatutUnite nouveauStatut) {
+
+        UniteSangDtoResponse unite = uniteSangService.updateStatusUnite(id, nouveauStatut);
+
+        return ResponseEntity.ok(unite);
     }
 }
