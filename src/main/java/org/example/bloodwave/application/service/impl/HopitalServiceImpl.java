@@ -1,21 +1,26 @@
 package org.example.bloodwave.application.service.impl;
 
+import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.HopitalDTO;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
 import org.example.bloodwave.application.dto.response.HopitalDtoResponse;
 import org.example.bloodwave.application.dto.response.StockSangDtoResponse;
 import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
+import org.example.bloodwave.application.exceptions.UserNotFoundException;
 import org.example.bloodwave.application.mapper.DonneurMapper;
 import org.example.bloodwave.application.mapper.StockSangMapper;
 import org.example.bloodwave.application.service.EmailService;
 import org.example.bloodwave.domain.entity.Hopital;
 import org.example.bloodwave.application.mapper.HopitalMapper;
 import org.example.bloodwave.domain.entity.StockSang;
+import org.example.bloodwave.domain.entity.Utilisateur;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import org.example.bloodwave.domain.repository.DonneurRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
 import org.example.bloodwave.application.service.HopitalService;
 import org.example.bloodwave.domain.repository.StockSangRepository;
+import org.example.bloodwave.domain.repository.UtilisateurRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,17 +31,19 @@ import static org.example.bloodwave.domain.enumeration.GroupeSanguin.*;
 
 
 @Service
+@AllArgsConstructor
 public class HopitalServiceImpl implements HopitalService {
 
 
-    public HopitalMapper hopitalMapper;
-    public PasswordEncoder passwordEncoder;
-    public HopitalRepository hopitalRepository;
-    public StockSangRepository stockSangRepository;
-    public StockSangMapper stockSangMapper;
-    public DonneurRepository donneurRepository;
-    public DonneurMapper donneurMapper;
-    public EmailService emailService;
+    public final HopitalMapper hopitalMapper;
+    public final PasswordEncoder passwordEncoder;
+    public final HopitalRepository hopitalRepository;
+    public final StockSangRepository stockSangRepository;
+    public final StockSangMapper stockSangMapper;
+    public final DonneurRepository donneurRepository;
+    public final DonneurMapper donneurMapper;
+    public final EmailService emailService;
+    public final UtilisateurRepository utilisateurRepository;
 
 
 
@@ -110,4 +117,14 @@ return   stockSangRepository
         .map(stockSangMapper::toDtoResponse)
         .toList();
     }
+
+    public void sendMessageToUser(String subject,String object,Long userId)
+    {
+       Utilisateur user =  this.utilisateurRepository
+                .findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("user not found with id " + userId));
+
+        this.emailService.sendEmail(user.getEmail(),subject,object);
     }
+
+}

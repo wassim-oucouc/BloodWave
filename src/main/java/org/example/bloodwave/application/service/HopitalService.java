@@ -18,5 +18,6 @@ public interface HopitalService {
     public Set<GroupeSanguin> getCompatibleGroups(GroupeSanguin groupe);
     public List<DonneurDtoResponse> findCompatibleDonneurs(GroupeSanguin groupe);
     public List<StockSangDtoResponse> getStockForConnectedHospital(Long hopitalId);
+    public void sendMessageToUser(String subject,String object,Long userId);
 
-    }
+}

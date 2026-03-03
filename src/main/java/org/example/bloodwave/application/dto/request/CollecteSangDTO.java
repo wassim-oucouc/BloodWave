@@ -5,6 +5,7 @@ import org.example.bloodwave.domain.entity.InscriptionCollecte;
 import org.example.bloodwave.domain.enumeration.StatutCollecte;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -13,7 +14,7 @@ public class CollecteSangDTO {
 
     private Long id;
 
-    private LocalDate dateCollecte;
+    private LocalDateTime dateCollecte;
     private String lieu;
     private Integer capaciteMax;
 
