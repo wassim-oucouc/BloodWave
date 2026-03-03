@@ -3,6 +3,7 @@ package org.example.bloodwave.application.service.impl;
 import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.CollecteSangDTO;
 import org.example.bloodwave.application.dto.response.CollecteSangDtoResponse;
+import org.example.bloodwave.application.exceptions.CollecteAlreadyScheduledException;
 import org.example.bloodwave.application.exceptions.CollecteNotFoundException;
 import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
 import org.example.bloodwave.application.mapper.CollecteSangMapper;
@@ -34,6 +35,10 @@ public class CollectSangServiceImpl implements CollecteSangService {
         Hopital hopital = hopitalRepository.findById(dto.getHopitalId())
                 .orElseThrow(() -> new HopitalNotFoundException("Hopital not found with id " + dto.getHopitalId()));
 
+        if (collecteSangRepository.existsByHopitalAndDateCollecte(hopital, dto.getDateCollecte())) {
+            throw new CollecteAlreadyScheduledException("Une collecte est déjà planifiée pour ce hopital à cette date et heure.");
+        }
+
         CollecteSang collecte = collecteSangMapper.toEntity(dto);
         collecte.setHopital(hopital);
         collecte.setStatut(StatutCollecte.PLANIFIEE);
@@ -46,11 +51,12 @@ public class CollectSangServiceImpl implements CollecteSangService {
     public CollecteSangDtoResponse updateCollecte(Long id, CollecteSangDTO dto) {
         CollecteSang collecte = collecteSangRepository.findById(id)
                 .orElseThrow(() -> new CollecteNotFoundException("Collecte not found with id " + id));
-
-        if (dto.getHopitalId() != null) {
             Hopital hopital = hopitalRepository.findById(dto.getHopitalId())
                     .orElseThrow(() -> new HopitalNotFoundException("Hopital not found with id " + dto.getHopitalId()));
             collecte.setHopital(hopital);
+
+        if (collecteSangRepository.existsByHopitalAndDateCollecte(hopital, dto.getDateCollecte())) {
+            throw new CollecteAlreadyScheduledException("Une collecte est déjà planifiée pour ce hopital à cette date et heure.");
         }
 
         collecte.setDateCollecte(dto.getDateCollecte());

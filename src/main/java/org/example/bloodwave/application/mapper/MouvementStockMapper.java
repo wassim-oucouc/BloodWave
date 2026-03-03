@@ -13,15 +13,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 @Mapper(
         componentModel = "spring",
         uses = {
-                StockSangMapper.class,
                 UnitSangMapper.class
         }
 )
 public abstract class MouvementStockMapper {
+    @Autowired
+    @Lazy
+    protected StockSangMapper stockSangMapper;
     @Autowired
     public StockSangRepository stockSangRepository;
     @Autowired

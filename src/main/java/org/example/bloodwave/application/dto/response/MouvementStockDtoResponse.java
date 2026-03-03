@@ -17,4 +17,6 @@ public class MouvementStockDtoResponse {
     private LocalDateTime date;
 
     private StockSangDtoResponse stockSangDtoResponse;
+
+    private UniteSangDtoResponse uniteSangDtoResponse;
 }
