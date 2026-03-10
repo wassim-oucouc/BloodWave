@@ -1,6 +1,5 @@
 package org.example.bloodwave.infrastructure.config;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,8 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JwtUtil  {
-
+public class JwtUtil {
 
     @Value("${jwt.secret-key}")
     private String secret_key;
@@ -24,7 +22,8 @@ public class JwtUtil  {
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(secret_key.getBytes());
     }
-    public Claims exctractAllClaims(String token){
+
+    public Claims exctractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getKey())
@@ -33,19 +32,19 @@ public class JwtUtil  {
                 .getBody();
     }
 
-    public  String extractUsername(String token) {
+    public String extractUsername(String token) {
         return exctractAllClaims(token).get("email", String.class);
     }
 
-    public  Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return exctractAllClaims(token).getExpiration().before(new Date());
     }
 
     public String generateToken(String email, Utilisateur utilisateur) {
-        Map<String,Object> claims = new HashMap<>();
-        claims.put("id",utilisateur.getId());
-        claims.put("email",email);
-        claims.put("role",utilisateur.getRole().name());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", utilisateur.getId());
+        claims.put("email", email);
+        claims.put("role", utilisateur.getRole().name());
 
         long now = System.currentTimeMillis();
         long expirationTime = 1000 * 60 * 60;

@@ -17,57 +17,53 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-
 @Service
 @AllArgsConstructor
 public class DonneurServiceImpl implements DonneurService {
-
 
     public DonneurMapper donneurMapper;
     public PasswordEncoder passwordEncoder;
     public DonneurRepository donneurRepository;
 
-
-
-    public DonneurDtoResponse registerDonneur(DonneurDTO dto)
-    {
-        Donneur donneur  = this.donneurMapper.toEntity(dto);
+    public DonneurDtoResponse registerDonneur(DonneurDTO dto) {
+        Donneur donneur = this.donneurMapper.toEntity(dto);
 
         String passwordHashed = this.passwordEncoder.encode(donneur.getMotDePasse());
 
         donneur.setMotDePasse(passwordHashed);
 
-        Donneur donneurCreated =  this.donneurRepository.save(donneur);
+        Donneur donneurCreated = this.donneurRepository.save(donneur);
         return this.donneurMapper.toDtoResponse(donneurCreated);
     }
 
-    public DonneurDtoResponse updateGroupSanguinById(Long id, GroupeSanguin groupeSanguin)
-    {
-      Donneur donneurFound =   this.donneurRepository.findById(id).orElseThrow(() -> new DonneurNotFoundException("donneur not found by id : " + id));
+    public DonneurDtoResponse updateGroupSanguinById(Long id, GroupeSanguin groupeSanguin) {
+        Donneur donneurFound = this.donneurRepository.findById(id)
+                .orElseThrow(() -> new DonneurNotFoundException("donneur not found by id : " + id));
 
-      donneurFound.setGroupeSanguin(groupeSanguin);
+        donneurFound.setGroupeSanguin(groupeSanguin);
 
-      Donneur donneurUpdated = this.donneurRepository.save(donneurFound);
+        Donneur donneurUpdated = this.donneurRepository.save(donneurFound);
 
-      return this.donneurMapper.toDtoResponse(donneurUpdated);
+        return this.donneurMapper.toDtoResponse(donneurUpdated);
     }
 
-    public Donneur findDonneurById(Long id)
-    {
-        return   this.donneurRepository
+    public Donneur findDonneurById(Long id) {
+        return this.donneurRepository
                 .findById(id)
-                .orElseThrow(()
-                        -> new DonneurNotFoundException("donneur not found by id : " + id));
+                .orElseThrow(() -> new DonneurNotFoundException("donneur not found by id : " + id));
 
     }
 
-    public boolean isEligible(Long id)
-    {
-       Donneur donor =  this.donneurRepository
+    public boolean isEligible(Long id) {
+        Donneur donor = this.donneurRepository
                 .findById(id)
                 .orElseThrow(() -> new DonneurNotFoundException("donner not found with id" + id));
 
-        int age = Period.between(donor.getGetDateOfBirth() ,LocalDate.now()).getYears();
+        if (donor.getGetDateOfBirth() == null) {
+            return false;
+        }
+
+        int age = Period.between(donor.getGetDateOfBirth(), LocalDate.now()).getYears();
 
         if (age < 18 || age > 65)
             return false;
@@ -78,8 +74,7 @@ public class DonneurServiceImpl implements DonneurService {
         if (donor.getLastDonationDate() != null) {
             long weeks = ChronoUnit.WEEKS.between(
                     donor.getLastDonationDate(),
-                    LocalDate.now()
-            );
+                    LocalDate.now());
             if (weeks < 8)
                 return false;
         }
@@ -96,9 +91,7 @@ public class DonneurServiceImpl implements DonneurService {
         return true;
     }
 
-
-    public List<DonneurDtoResponse> getDonneursByCity(String city)
-    {
+    public List<DonneurDtoResponse> getDonneursByCity(String city) {
         return this.donneurRepository.findDonneurByVille(city).stream().map(donneurMapper::toDtoResponse).toList();
     }
 }

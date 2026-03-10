@@ -15,33 +15,29 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
-
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
+
         if (path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/webjars") ||
                 path.startsWith("/api/auth") ||
                 path.startsWith("/api/client") ||
-                path.startsWith("/api/sales-orders")
-        ){
+                path.startsWith("/api/sales-orders")) {
+
             filterChain.doFilter(request, response);
             return;
         }
-
-
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
@@ -53,29 +49,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-
-
-
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader == null || !authHeader.startsWith("Bearer "))
-        {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
+        try {
+
             String token = authHeader.substring(7);
             String email = jwtUtil.extractUsername(token);
 
             if (email != null && !jwtUtil.isTokenExpired(token)) {
+
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
                 System.out.println("User email: " + userDetails.getUsername());
                 System.out.println("Authorities: " + userDetails.getAuthorities());
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
+
+        } catch (Exception e) {
+            System.out.println("JWT error: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);

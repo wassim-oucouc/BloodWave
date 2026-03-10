@@ -1,6 +1,5 @@
 package org.example.bloodwave.application.service;
 
-
 import org.example.bloodwave.application.dto.request.DemandeSangDTO;
 import org.example.bloodwave.application.dto.response.DemandeSangDtoResponse;
 import org.example.bloodwave.domain.enumeration.StatutDemande;
@@ -15,16 +14,16 @@ public interface DemandeSangService {
 
     List<DemandeSangDtoResponse> getByDemandeur(Long demandeurId);
 
-    public List<DemandeSangDtoResponse> getAll();
+    List<DemandeSangDtoResponse> getByHopital(Long hopitalId);
 
-        DemandeSangDtoResponse getById(Long id);
+    List<DemandeSangDtoResponse> getAll();
+
+    DemandeSangDtoResponse getById(Long id);
 
     DemandeSangDtoResponse updateStatut(Long id, StatutDemande statut);
 
-    public void approveDemande(Long demandeId);
+    void approveDemande(Long demandeId);
 
-    public void rejectDemande(Long demandeId);
-
-
+    void rejectDemande(Long demandeId);
 
 }

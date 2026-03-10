@@ -90,6 +90,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        System.out.println("LOGIN CONTROLLER CALLED");
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
