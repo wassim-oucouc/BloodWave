@@ -24,116 +24,119 @@ import java.util.stream.Collectors;
 @Service
 public class DemandeSangServiceImpl implements DemandeSangService {
 
-    private final DemandeSangRepository demandeSangRepository;
-    private final DemandeurRepository demandeurRepository;
-    private final HopitalRepository hopitalRepository;
-    private final DemandeSangMapper demandeSangMapper;
-    private final EmailService emailService;
+        private final DemandeSangRepository demandeSangRepository;
+        private final DemandeurRepository demandeurRepository;
+        private final HopitalRepository hopitalRepository;
+        private final DemandeSangMapper demandeSangMapper;
+        private final EmailService emailService;
 
-    @Override
-    public DemandeSangDtoResponse create(DemandeSangDTO dto) {
+        @Override
+        public DemandeSangDtoResponse create(DemandeSangDTO dto) {
 
-        Demandeur demandeur = demandeurRepository.findById(dto.getDemandeurId())
-                .orElseThrow(() -> new RuntimeException("Demandeur non trouvé"));
+                Demandeur demandeur = demandeurRepository.findById(dto.getDemandeurId())
+                                .orElseThrow(() -> new RuntimeException("Demandeur non trouvé"));
 
-        Hopital hopital = hopitalRepository.findById(dto.getHopitalId())
-                .orElseThrow(() -> new RuntimeException("Hopital non trouvé"));
+                Hopital hopital = hopitalRepository.findById(dto.getHopitalId())
+                                .orElseThrow(() -> new RuntimeException("Hopital non trouvé"));
 
-        DemandeSang demandeSang = demandeSangMapper.toEntity(dto);
+                DemandeSang demandeSang = demandeSangMapper.toEntity(dto);
 
-        demandeSang.setDemandeur(demandeur);
-        demandeSang.setHopital(hopital);
-        demandeSang.setDateCreation(LocalDateTime.now());
+                demandeSang.setDemandeur(demandeur);
+                demandeSang.setHopital(hopital);
+                demandeSang.setDateCreation(LocalDateTime.now());
 
-        demandeSang.setStatut(StatutDemande.EN_ATTENTE);
+                demandeSang.setStatut(StatutDemande.EN_ATTENTE);
 
-        DemandeSang saved = demandeSangRepository.save(demandeSang);
+                DemandeSang saved = demandeSangRepository.save(demandeSang);
 
-        return demandeSangMapper.toDtoResponse(saved);
-    }
+                return demandeSangMapper.toDtoResponse(saved);
+        }
 
+        @Override
+        public List<DemandeSangDtoResponse> getAll() {
 
-    @Override
-    public List<DemandeSangDtoResponse> getAll() {
+                return demandeSangRepository.findAll()
+                                .stream()
+                                .map(demandeSangMapper::toDtoResponse)
+                                .collect(Collectors.toList());
+        }
 
-        return demandeSangRepository.findAll()
-                .stream()
-                .map(demandeSangMapper::toDtoResponse)
-                .collect(Collectors.toList());
-    }
+        @Override
+        public DemandeSangDtoResponse getById(Long id) {
 
+                DemandeSang demandeSang = demandeSangRepository.findById(id)
+                                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
-    @Override
-    public DemandeSangDtoResponse getById(Long id) {
+                return demandeSangMapper.toDtoResponse(demandeSang);
+        }
 
-        DemandeSang demandeSang = demandeSangRepository.findById(id)
-                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
+        @Override
+        public List<DemandeSangDtoResponse> getByDemandeur(Long demandeurId) {
 
-        return demandeSangMapper.toDtoResponse(demandeSang);
-    }
+                return demandeSangRepository.findByDemandeurId(demandeurId)
+                                .stream()
+                                .map(demandeSangMapper::toDtoResponse)
+                                .collect(Collectors.toList());
+        }
 
+        @Override
+        public List<DemandeSangDtoResponse> getByHopital(Long hopitalId) {
 
-    @Override
-    public List<DemandeSangDtoResponse> getByDemandeur(Long demandeurId) {
+                return demandeSangRepository.findByHopitalId(hopitalId)
+                                .stream()
+                                .map(demandeSangMapper::toDtoResponse)
+                                .collect(Collectors.toList());
+        }
 
-        return demandeSangRepository.findByDemandeurId(demandeurId)
-                .stream()
-                .map(demandeSangMapper::toDtoResponse)
-                .collect(Collectors.toList());
-    }
+        @Override
+        public DemandeSangDtoResponse updateStatut(Long id, StatutDemande statut) {
 
+                DemandeSang demandeSang = demandeSangRepository.findById(id)
+                                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
-    @Override
-    public DemandeSangDtoResponse updateStatut(Long id, StatutDemande statut) {
+                demandeSang.setStatut(statut);
 
-        DemandeSang demandeSang = demandeSangRepository.findById(id)
-                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
+                DemandeSang updated = demandeSangRepository.save(demandeSang);
 
-        demandeSang.setStatut(statut);
+                return demandeSangMapper.toDtoResponse(updated);
+        }
 
-        DemandeSang updated = demandeSangRepository.save(demandeSang);
+        public void approveDemande(Long demandeId) {
 
-        return demandeSangMapper.toDtoResponse(updated);
-    }
+                DemandeSang demandeSang = demandeSangRepository.findById(demandeId)
+                                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
-    public void approveDemande(Long demandeId)
-    {
-        DemandeSang demandeSang = demandeSangRepository.findById(demandeId)
-                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
+                demandeSang.setStatut(StatutDemande.ACCEPTEE);
 
-        demandeSang.setStatut(StatutDemande.ACCEPTEE);
+                this.emailService.sendEmail(
+                                demandeSang.getDemandeur().getEmail(),
+                                "Your Blood Request Has Been Approved",
+                                "Hello " + demandeSang.getDemandeur().getNom() + ",\n\n" +
+                                                "Your blood request with ID " + demandeSang.getId()
+                                                + " has been APPROVED.\n" +
+                                                "Please follow any instructions provided by the hospital.\n\n" +
+                                                "Thank you for using BloodWave.");
 
-        this.emailService.sendEmail(demandeSang.getDemandeur().getEmail(),
-                "Your Blood Request Has Been Approved",
-                "Hello "+ demandeSang.getDemandeur().getNom() + ",\\n\\n\" +\n" +
-                        "    \"Your blood request with ID \" + demande.getId() + \" has been APPROVED.\\n\" +\n" +
-                        "    \"Please follow any instructions provided by the hospital.\\n\\n\" +\n" +
-                        "    \"Thank you for using BloodWave.\"");
+                this.demandeSangRepository.save(demandeSang);
+        }
 
-        this.demandeSangRepository.save(demandeSang);
+        public void rejectDemande(Long demandeId) {
 
-    }
+                DemandeSang demandeSang = demandeSangRepository.findById(demandeId)
+                                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
+                demandeSang.setStatut(StatutDemande.REFUSEE);
 
-    public void rejectDemande(Long demandeId)
-    {
-                DemandeSang
-                demandeSang =
-                demandeSangRepository
-                .findById(demandeId)
-                .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
+                this.emailService.sendEmail(
+                                demandeSang.getDemandeur().getEmail(),
+                                "Your Blood Request Has Been Refused",
+                                "Hello " + demandeSang.getDemandeur().getNom() + ",\n\n" +
+                                                "Your blood request with ID " + demandeSang.getId()
+                                                + " has been REFUSED.\n" +
+                                                "Please follow any instructions provided by the hospital.\n\n" +
+                                                "Thank you for using BloodWave.");
 
-        demandeSang.setStatut(StatutDemande.REFUSEE);
-
-        this.emailService.sendEmail(demandeSang.getDemandeur().getEmail(),
-                "Your Blood Request Has Been Refused",
-                "Hello "+ demandeSang.getDemandeur().getNom() + ",\\n\\n\" +\n" +
-                        "    \"Your blood request with ID \" + demande.getId() + \" has been REFUSED.\\n\" +\n" +
-                        "    \"Please follow any instructions provided by the hospital.\\n\\n\" +\n" +
-                        "    \"Thank you for using BloodWave.\"");
-
-        this.demandeSangRepository.save(demandeSang);
-
-    }
+                this.demandeSangRepository.save(demandeSang);
+        }
 
 }
