@@ -15,6 +15,7 @@ import org.example.bloodwave.application.mapper.HopitalMapper;
 import org.example.bloodwave.domain.entity.StockSang;
 import org.example.bloodwave.domain.entity.Utilisateur;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
+import org.example.bloodwave.domain.enumeration.RoleType;
 import org.example.bloodwave.domain.repository.DonneurRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
 import org.example.bloodwave.application.service.HopitalService;
@@ -50,6 +51,7 @@ public class HopitalServiceImpl implements HopitalService {
     public HopitalDtoResponse registerHopital(HopitalDTO dto)
     {
         Hopital hopital  = this.hopitalMapper.toEntity(dto);
+        hopital.setRole(RoleType.HOPITAL);
 
         String passwordHashed = this.passwordEncoder.encode(hopital.getMotDePasse());
 

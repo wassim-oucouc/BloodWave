@@ -1,25 +1,20 @@
-package org.example.bloodwave.application.dto.response;
+package org.example.bloodwave.application.dto.request;
 
 import lombok.Data;
-import org.example.bloodwave.application.dto.request.DonDTO;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
-public class DonneurDtoResponse extends UtilisateurDtoResponse{
-
+public class DonneurUpdateDTO {
+    private Double poids;
     private GroupeSanguin groupeSanguin;
+    private LocalDate dateNaissance;
     private LocalDate dateDernierDon;
     private Boolean disponible;
-    private Integer nombreDonsTotaux;
-    private LocalDate dateNaissance;
-    private Double poids;
     private Boolean aMaladieChronique;
     private Boolean estSousTraitement;
     private Boolean aSubiChirurgieRecente;
     private Boolean estEnceinte;
     private Boolean aInfectionRecente;
-    private List<DonDtoResponse> dtoResponses;
 }

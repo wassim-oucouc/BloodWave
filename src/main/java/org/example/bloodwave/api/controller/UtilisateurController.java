@@ -1,8 +1,8 @@
 package org.example.bloodwave.api.controller;
 
 import org.example.bloodwave.application.dto.request.UtilisateurDTO;
+import org.example.bloodwave.application.dto.request.UtilisateurUpdateDTO;
 import org.example.bloodwave.application.dto.response.UtilisateurDtoResponse;
-import org.example.bloodwave.application.exceptions.UserNotFoundException;
 import org.example.bloodwave.application.service.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +53,7 @@ public class UtilisateurController {
     @PutMapping("/{id}")
     public ResponseEntity<UtilisateurDtoResponse> updateUtilisateur(
             @PathVariable Long id,
-            @RequestBody UtilisateurDTO dto
+            @RequestBody UtilisateurUpdateDTO dto
     ) {
         UtilisateurDtoResponse updated = utilisateurService.updateUtilisateurById(id, dto);
         return ResponseEntity.ok(updated);
@@ -115,12 +115,7 @@ public class UtilisateurController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<UtilisateurDtoResponse> getUtilisateurById(@PathVariable Long id) {
-        UtilisateurDtoResponse utilisateur = utilisateurService
-                .getAllUtilisateurs()
-                .stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new UserNotFoundException("Utilisateur not found with id " + id));
+        UtilisateurDtoResponse utilisateur = utilisateurService.getUtilisateurById(id);
         return ResponseEntity.ok(utilisateur);
     }
 }

@@ -13,6 +13,8 @@ import java.util.List;
 @Service
 public interface DonService {
 
+    public DonDtoResponse getDonById(Long id);
+
     public List<DonDtoResponse> getDonationHistoryById(Long id);
 
     public DonDtoResponse createDonation(DonDTO dto);

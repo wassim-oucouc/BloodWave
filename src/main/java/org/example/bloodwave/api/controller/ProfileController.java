@@ -1,12 +1,12 @@
 package org.example.bloodwave.api.controller;
 
-import org.example.bloodwave.application.dto.request.UtilisateurDTO;
+import org.example.bloodwave.application.dto.request.PasswordChangeDTO;
+import org.example.bloodwave.application.dto.request.UtilisateurUpdateDTO;
 import org.example.bloodwave.application.dto.response.UtilisateurDtoResponse;
 import org.example.bloodwave.application.service.UtilisateurService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 /**
  * REST Controller responsible for managing user profiles.
  */
@@ -30,21 +30,21 @@ public class ProfileController {
     @PutMapping("/{id}")
     public ResponseEntity<UtilisateurDtoResponse> updateProfile(
             @PathVariable Long id,
-            @RequestBody UtilisateurDTO dto
+            @RequestBody UtilisateurUpdateDTO dto
     ) {
         return ResponseEntity.ok(utilisateurService.updateUtilisateurById(id, dto));
     }
 
     /** Changes the user's password */
-    @PutMapping("/password")
+        @PutMapping("/{id}/password")
     public ResponseEntity<String> changePassword(
             @PathVariable Long id,
-            @RequestBody Map<String, String> passwords
+            @RequestBody PasswordChangeDTO passwords
     ) {
         utilisateurService.changePassword(
                 id,
-                passwords.get("oldPassword"),
-                passwords.get("newPassword")
+            passwords.getOldPassword(),
+            passwords.getNewPassword()
         );
         return ResponseEntity.ok("Password updated successfully");
     }

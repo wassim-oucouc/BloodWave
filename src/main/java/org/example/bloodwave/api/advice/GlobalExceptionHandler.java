@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
             DonNotFoundException.class,
             DonneurNotFoundException.class,
             HopitalNotFoundException.class,
+            InscriptionCollecteNotFoundException.class,
             PasswordResetTokenNotFoundException.class,
             StockSangNotFoundException.class,
             UnitSangNotFoundException.class,

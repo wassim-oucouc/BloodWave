@@ -88,4 +88,11 @@ public class CollectSangController {
         List<CollecteSangDtoResponse> collectes = collecteSangService.getAllCollectes();
         return ResponseEntity.ok(collectes);
     }
+
+    @GetMapping("/hopital/{hopitalId}")
+            public ResponseEntity<List<CollecteSangDtoResponse>> getCollectSangByHopitalId(@PathVariable("hopitalId") Long hopitalId)
+    {
+
+        return ResponseEntity.ok().body(this.collecteSangService.getCollectsByHopitalId(hopitalId));
+    }
 }

@@ -10,5 +10,7 @@ public class InscriptionCollecteDtoResponse {
 
     private DonneurDtoResponse donneurDtoResponse;
 
+    private boolean joined;
+
     private CollecteSangDtoResponse collecteSangDtoResponse;
 }

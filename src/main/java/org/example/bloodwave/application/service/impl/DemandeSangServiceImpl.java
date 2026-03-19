@@ -106,6 +106,8 @@ public class DemandeSangServiceImpl implements DemandeSangService {
                 DemandeSang demandeSang = demandeSangRepository.findById(demandeId)
                                 .orElseThrow(() -> new DemandeSangNotFoundException("Demande non trouvée"));
 
+                System.out.println(demandeSang);
+
                 demandeSang.setStatut(StatutDemande.ACCEPTEE);
 
                 this.emailService.sendEmail(

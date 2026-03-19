@@ -2,6 +2,7 @@ package org.example.bloodwave.api.controller;
 
 
 import lombok.AllArgsConstructor;
+import org.example.bloodwave.application.dto.request.DonneurUpdateDTO;
 import org.example.bloodwave.application.dto.response.CollecteSangDtoResponse;
 import org.example.bloodwave.application.dto.response.DonDtoResponse;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
@@ -26,8 +27,8 @@ public class DonneurController {
     private final DonService donService;
     private final CollecteSangService collecteSangService;
 
-    /** Updates donor blood group by ID */
-    @PutMapping("/{id}")
+    /** Updates donor blood group only */
+    @PutMapping("/{id}/groupe-sanguin")
     public ResponseEntity<DonneurDtoResponse> updateGroupeSanguinById(
             @PathVariable Long id,
             @RequestBody GroupeSanguin groupeSanguin
@@ -48,7 +49,7 @@ public class DonneurController {
             @PathVariable Long donneurId,
             @PathVariable Long collecteId
     ) {
-        Donneur donneur = donneurService.findDonneurById(donneurId);
+        Donneur donneur = donneurService.findDonneurEntityById(donneurId);
         CollecteSangDtoResponse joined = collecteSangService.joinCollecte(collecteId, donneur);
         return ResponseEntity.ok(joined);
     }
@@ -59,14 +60,18 @@ public class DonneurController {
             @PathVariable Long donneurId,
             @PathVariable Long collecteId
     ) {
-        Donneur donneur = donneurService.findDonneurById(donneurId);
+        Donneur donneur = donneurService.findDonneurEntityById(donneurId);
         CollecteSangDtoResponse canceled = collecteSangService.cancelParticipation(collecteId, donneur);
         return ResponseEntity.ok(canceled);
     }
 
     /** Retrieves blood collection details */
     @GetMapping("/{donneurId}/collectes/{collecteId}")
-    public ResponseEntity<CollecteSangDtoResponse> getCollecteDetails(@PathVariable Long collecteId) {
+    public ResponseEntity<CollecteSangDtoResponse> getCollecteDetails(
+            @PathVariable Long donneurId,
+            @PathVariable Long collecteId
+    ) {
+        donneurService.findDonneurEntityById(donneurId);
         CollecteSangDtoResponse collecte = collecteSangService.getCollecteById(collecteId);
         return ResponseEntity.ok(collecte);
     }
@@ -75,5 +80,20 @@ public class DonneurController {
     @GetMapping("/donneurs/filter/{city}")
     public ResponseEntity<List<DonneurDtoResponse>> filterDoneursByCity(@PathVariable String city) {
         return ResponseEntity.ok(donneurService.getDonneursByCity(city));
+    }
+
+    @GetMapping("/donneur/{donneurId}")
+    public ResponseEntity<DonneurDtoResponse> findDonneurById(@PathVariable Long donneurId)
+    {
+        return ResponseEntity.ok().body(this.donneurService.findDonneurById(donneurId));
+    }
+
+    /** Updates donor personal info (weight, blood group, dates, medical flags) */
+    @PutMapping("/{id}")
+    public ResponseEntity<DonneurDtoResponse> updateDonneurInfo(
+            @PathVariable("id") Long donneurId,
+            @RequestBody DonneurUpdateDTO dto
+    ) {
+        return ResponseEntity.ok(donneurService.updateDonneurInfo(donneurId, dto));
     }
 }
