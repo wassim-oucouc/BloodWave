@@ -25,4 +25,5 @@ public interface CollecteSangService {
     public CollecteSangDtoResponse joinCollecte(Long collecteId, Donneur donneur);
     public CollecteSangDtoResponse cancelParticipation(Long collecteId, Donneur donneur);
     public List<CollecteSangDtoResponse> getCollectesByStatus(StatutCollecte statut);
+    public List<CollecteSangDtoResponse> getCollectsByHopitalId(Long hopitalId);
 }

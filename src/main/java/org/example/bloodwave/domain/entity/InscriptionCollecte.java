@@ -14,6 +14,8 @@ public class InscriptionCollecte {
     @ManyToOne
     private Donneur donneur;
 
+    private boolean joined;
+
     @ManyToOne
     private CollecteSang collecte;
 }

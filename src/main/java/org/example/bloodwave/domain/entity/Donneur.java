@@ -28,7 +28,10 @@ public class Donneur extends Utilisateur {
     private LocalDate lastDonationDate;
     private Boolean estEnceinte;
     private Boolean aInfectionRecente;
-    public LocalDate getDateOfBirth;
+
+    @Column(name = "get_date_of_birth")
+    private LocalDate dateOfBirth;
+
     @OneToMany
     private List<Don> dons;
 

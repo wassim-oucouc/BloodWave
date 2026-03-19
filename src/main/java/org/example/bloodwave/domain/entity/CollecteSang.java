@@ -19,7 +19,7 @@ public class CollecteSang {
     private LocalDateTime dateCollecte;
     private String lieu;
     private Integer capaciteMax;
-
+    private String description;
     @Enumerated(EnumType.STRING)
     private StatutCollecte statut;
 

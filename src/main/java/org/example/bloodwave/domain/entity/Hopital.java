@@ -11,7 +11,6 @@ import java.util.List;
 public class Hopital extends Utilisateur {
 
     private String nomHopital;
-    private String ville;
     private Integer capaciteStockage;
 
     @OneToMany(mappedBy = "hopital")

@@ -24,9 +24,8 @@ public abstract class UtilisateurMapper {
     @SubclassMapping(source = DemandeurDTO.class, target = Demandeur.class)
     @SubclassMapping(source = DonneurDTO.class, target = Donneur.class)
     public abstract Utilisateur toEntity(UtilisateurDTO utilisateurDTO);
-    // --------------------------
-    // Map from Entity to DTO Response
-    // --------------------------
+
+
     @SubclassMapping(source = Hopital.class, target = HopitalDtoResponse.class)
     @SubclassMapping(source = Demandeur.class, target = DemandeurDtoResponse.class)
     @SubclassMapping(source = Donneur.class, target = DonneurDtoResponse.class)

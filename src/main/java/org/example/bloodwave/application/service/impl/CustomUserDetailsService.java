@@ -12,27 +12,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-private UtilisateurRepository utilisateurRepository;
-
+    private final UtilisateurRepository utilisateurRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Utilisateur utilisateur = (Utilisateur) this.utilisateurRepository.findByEmail(email).orElseThrow();
 
-        Set<GrantedAuthority> authorities =
-                Set.of(new SimpleGrantedAuthority(utilisateur.getRole().name()));
+        Set<GrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority(utilisateur.getRole().name()));
 
         return new org.springframework.security.core.userdetails.User(
                 utilisateur.getEmail(),
                 utilisateur.getMotDePasse(),
-                authorities
-        );
+                authorities);
 
     }
 }
