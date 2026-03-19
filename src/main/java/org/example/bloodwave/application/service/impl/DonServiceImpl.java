@@ -4,6 +4,7 @@ import org.example.bloodwave.application.dto.request.DonDTO;
 import org.example.bloodwave.application.dto.response.DonDtoResponse;
 import org.example.bloodwave.application.exceptions.DonNotFoundException;
 import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
+import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
 import org.example.bloodwave.application.mapper.DonMapper;
 import org.example.bloodwave.application.service.DonService;
 import org.example.bloodwave.application.service.DonneurService;
@@ -11,11 +12,13 @@ import org.example.bloodwave.application.service.EmailService;
 import org.example.bloodwave.application.service.StockSangService;
 import org.example.bloodwave.domain.entity.Don;
 import org.example.bloodwave.domain.entity.Donneur;
+import org.example.bloodwave.domain.entity.Hopital;
 import org.example.bloodwave.domain.entity.StockSang;
 import org.example.bloodwave.domain.entity.UniteSang;
 import org.example.bloodwave.domain.enumeration.StatutDon;
 import org.example.bloodwave.domain.repository.DonRepository;
 import org.example.bloodwave.domain.repository.DonneurRepository;
+import org.example.bloodwave.domain.repository.HopitalRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,9 +37,18 @@ public class DonServiceImpl implements DonService {
 
     private DonRepository donRepository;
     private DonneurRepository donneurRepository;
+        private HopitalRepository hopitalRepository;
     private DonMapper donMapper;
     private DonneurService donneurService;
     private StockSangService stockSangService;
+
+        public DonDtoResponse getDonById(Long id) {
+                Don don = this.donRepository
+                                .findById(id)
+                                .orElseThrow(() -> new DonNotFoundException("don not found with id: " + id));
+
+                return this.donMapper.toDtoResponse(don);
+        }
 
     public List<DonDtoResponse> getDonationHistoryById(Long id) {
         Donneur donneur = this.donneurRepository.findById(id).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id" + id));
@@ -44,7 +56,9 @@ public class DonServiceImpl implements DonService {
     }
 
     public DonDtoResponse createDonation(DonDTO dto) {
-      Donneur donneur =   this.donneurRepository.findById(dto.getDonneurId()).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id :" + dto.getDonneurId()));
+                        Donneur donneur =   this.donneurRepository.findById(dto.getDonneurId()).orElseThrow(() -> new DonneurNotFoundException("donneur not found with id :" + dto.getDonneurId()));
+                        Hopital hopital = this.hopitalRepository.findById(dto.getHopitalId())
+                                                        .orElseThrow(() -> new HopitalNotFoundException("hopital not found with id :" + dto.getHopitalId()));
 
         boolean eligibility = donneurService.isEligible(donneur.getId());
 
@@ -55,6 +69,8 @@ public class DonServiceImpl implements DonService {
         }
 
         Don don = this.donMapper.toEntity(dto);
+        don.setDonneur(donneur);
+        don.setHopital(hopital);
 
         don.setStatut(StatutDon.PLANIFIE);
 
@@ -83,6 +99,8 @@ public class DonServiceImpl implements DonService {
                 .setLastDonationDate(LocalDate
                         .now());
 
+        donneurRepository.save(donneur);
+
         Don donUpdated = this.donRepository.save(donFound);
         StockSang stockSang = this.stockSangService
                 .getStockSangByGroupeSang(donFound.getDonneur().getGroupeSanguin());
@@ -95,7 +113,8 @@ public class DonServiceImpl implements DonService {
         uniteSang.setNumeroUnite("UN-" + randomNumber);
         uniteSang.setDateExpiration(LocalDate.now().plusDays(46));
 
-        this.stockSangService.ajouterAuStock(stockSang,Integer.parseInt(String.valueOf(donFound.getQuantite())),uniteSang);
+        int quantite = donFound.getQuantite() == null ? 0 : donFound.getQuantite().intValue();
+        this.stockSangService.ajouterAuStock(stockSang, quantite, uniteSang);
         return this.donMapper.toDtoResponse(donUpdated);
 
     }

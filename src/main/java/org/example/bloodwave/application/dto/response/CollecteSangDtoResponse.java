@@ -11,11 +11,10 @@ import java.util.List;
 public class CollecteSangDtoResponse {
 
     private Long id;
-
     private LocalDateTime dateCollecte;
     private String lieu;
     private Integer capaciteMax;
-
+    private String description;
     private StatutCollecte statut;
 
     private HopitalDtoResponse hopitalDtoResponse;

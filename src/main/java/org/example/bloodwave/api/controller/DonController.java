@@ -77,10 +77,7 @@ public class DonController {
     /** Retrieves a donation by ID */
     @GetMapping("/{id}")
     public ResponseEntity<DonDtoResponse> getDonById(@PathVariable Long id) {
-        DonDtoResponse don = donService.getDonationHistoryById(id)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new DonNotFoundException("Don not found with id " + id));
+        DonDtoResponse don = donService.getDonById(id);
         return ResponseEntity.ok(don);
     }
 }

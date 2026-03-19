@@ -14,7 +14,6 @@ import java.util.List;
 public class HopitalDTO extends UtilisateurDTO {
 
     private String nomHopital;
-    private String ville;
     private Integer capaciteStockage;
 
     private List<StockSangDTO> stockSangDTOS;

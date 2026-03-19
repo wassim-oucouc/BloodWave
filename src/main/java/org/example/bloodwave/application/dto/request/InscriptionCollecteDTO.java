@@ -10,5 +10,8 @@ public class InscriptionCollecteDTO {
 
     private Long donneurId;
 
+    private boolean joined;
+
+
     private Long collectSangId;
 }

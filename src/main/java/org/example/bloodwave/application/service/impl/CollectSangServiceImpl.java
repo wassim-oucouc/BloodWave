@@ -15,10 +15,12 @@ import org.example.bloodwave.domain.entity.InscriptionCollecte;
 import org.example.bloodwave.domain.enumeration.StatutCollecte;
 import org.example.bloodwave.domain.repository.CollecteSangRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
+import org.example.bloodwave.domain.repository.InscriptionCollecteRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -28,6 +30,7 @@ public class CollectSangServiceImpl implements CollecteSangService {
     private final CollecteSangRepository collecteSangRepository;
     private final HopitalRepository hopitalRepository;
     private final CollecteSangMapper collecteSangMapper;
+    private  final InscriptionCollecteRepository inscriptionCollecteRepository;
 
 
 
@@ -35,13 +38,12 @@ public class CollectSangServiceImpl implements CollecteSangService {
         Hopital hopital = hopitalRepository.findById(dto.getHopitalId())
                 .orElseThrow(() -> new HopitalNotFoundException("Hopital not found with id " + dto.getHopitalId()));
 
-        if (collecteSangRepository.existsByHopitalAndDateCollecte(hopital, dto.getDateCollecte())) {
-            throw new CollecteAlreadyScheduledException("Une collecte est déjà planifiée pour ce hopital à cette date et heure.");
-        }
-
         CollecteSang collecte = collecteSangMapper.toEntity(dto);
         collecte.setHopital(hopital);
         collecte.setStatut(StatutCollecte.PLANIFIEE);
+        collecte.setDescription(dto.getDescription());
+
+
 
         CollecteSang created = collecteSangRepository.save(collecte);
         return collecteSangMapper.toDtoResponse(created);
@@ -54,10 +56,6 @@ public class CollectSangServiceImpl implements CollecteSangService {
             Hopital hopital = hopitalRepository.findById(dto.getHopitalId())
                     .orElseThrow(() -> new HopitalNotFoundException("Hopital not found with id " + dto.getHopitalId()));
             collecte.setHopital(hopital);
-
-        if (collecteSangRepository.existsByHopitalAndDateCollecte(hopital, dto.getDateCollecte())) {
-            throw new CollecteAlreadyScheduledException("Une collecte est déjà planifiée pour ce hopital à cette date et heure.");
-        }
 
         collecte.setDateCollecte(dto.getDateCollecte());
         collecte.setLieu(dto.getLieu());
@@ -97,6 +95,9 @@ public class CollectSangServiceImpl implements CollecteSangService {
         InscriptionCollecte inscription = new InscriptionCollecte();
         inscription.setCollecte(collecte);
         inscription.setDonneur(donneur);
+        inscription.setJoined(true);
+
+        this.inscriptionCollecteRepository.save(inscription);
 
         collecte.getInscriptions().add(inscription);
 
@@ -108,8 +109,12 @@ public class CollectSangServiceImpl implements CollecteSangService {
     public CollecteSangDtoResponse cancelParticipation(Long collecteId, Donneur donneur) {
         CollecteSang collecte = collecteSangRepository.findById(collecteId)
                 .orElseThrow(() -> new CollecteNotFoundException("Collecte not found with id " + collecteId));
+      InscriptionCollecte inscriptionCollecte =   this.inscriptionCollecteRepository.findByDonneurId(donneur.getId());
 
-        collecte.setStatut(StatutCollecte.ANNULEE);
+      inscriptionCollecte.setJoined(false);
+
+      this.inscriptionCollecteRepository.save(inscriptionCollecte);
+
 
         CollecteSang updated = collecteSangRepository.save(collecte);
         return collecteSangMapper.toDtoResponse(updated);
@@ -120,6 +125,16 @@ public class CollectSangServiceImpl implements CollecteSangService {
                 .stream()
                 .map(collecteSangMapper::toDtoResponse)
                 .toList();
+    }
+
+    public List<CollecteSangDtoResponse> getCollectsByHopitalId(Long hopitalId)
+    {
+        return collecteSangRepository
+                .findAll()
+                .stream()
+                .filter(collecteSang
+                        -> Objects.equals(collecteSang.getHopital().getId(), hopitalId))
+                .map(collecteSangMapper::toDtoResponse).toList();
     }
 
 

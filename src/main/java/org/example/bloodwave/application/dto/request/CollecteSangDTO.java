@@ -17,6 +17,7 @@ public class CollecteSangDTO {
     private LocalDateTime dateCollecte;
     private String lieu;
     private Integer capaciteMax;
+    private String description;
 
     private StatutCollecte statut;
 

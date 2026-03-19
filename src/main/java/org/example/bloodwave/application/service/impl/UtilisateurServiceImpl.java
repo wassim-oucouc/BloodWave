@@ -1,13 +1,14 @@
 package org.example.bloodwave.application.service.impl;
 
+import org.example.bloodwave.application.dto.request.UtilisateurUpdateDTO;
 import org.example.bloodwave.application.dto.request.UtilisateurDTO;
 import org.example.bloodwave.application.dto.response.UtilisateurDtoResponse;
 import org.example.bloodwave.application.exceptions.PasswordNotMatchException;
+import org.example.bloodwave.application.exceptions.UserNotFoundException;
 import org.example.bloodwave.application.mapper.UtilisateurMapper;
 import org.example.bloodwave.application.service.UtilisateurService;
 import org.example.bloodwave.domain.entity.Utilisateur;
 import org.example.bloodwave.domain.repository.UtilisateurRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +35,33 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     }
 
-    public UtilisateurDtoResponse updateUtilisateurById(Long id, UtilisateurDTO utilisateurDTO) {
+    public UtilisateurDtoResponse updateUtilisateurById(Long id, UtilisateurUpdateDTO utilisateurDTO) {
         Utilisateur utilisateurFound = this.utilisateurRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
-        Utilisateur updated = this.utilisateurMapper.toEntity(utilisateurDTO);
+                .orElseThrow(() -> new UserNotFoundException("user not found by id : " + id));
 
-        updated.setId(utilisateurFound.getId());
+        if (utilisateurDTO.getNom() != null) {
+            utilisateurFound.setNom(utilisateurDTO.getNom());
+        }
+        if (utilisateurDTO.getPrenom() != null) {
+            utilisateurFound.setPrenom(utilisateurDTO.getPrenom());
+        }
+        if (utilisateurDTO.getEmail() != null) {
+            utilisateurFound.setEmail(utilisateurDTO.getEmail());
+        }
+        if (utilisateurDTO.getTelephone() != null) {
+            utilisateurFound.setTelephone(utilisateurDTO.getTelephone());
+        }
+        if (utilisateurDTO.getAdresse() != null) {
+            utilisateurFound.setAdresse(utilisateurDTO.getAdresse());
+        }
+        if (utilisateurDTO.getVille() != null) {
+            utilisateurFound.setVille(utilisateurDTO.getVille());
+        }
+        if (utilisateurDTO.getActif() != null) {
+            utilisateurFound.setActif(utilisateurDTO.getActif());
+        }
 
-        Utilisateur utilisateurUpdated = this.utilisateurRepository.save(updated);
+        Utilisateur utilisateurUpdated = this.utilisateurRepository.save(utilisateurFound);
 
         return this.utilisateurMapper.toDtoResponse(utilisateurUpdated);
 
@@ -49,14 +69,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     public void deleteUtilisateurById(Long id) {
         Utilisateur utilisateurFound = this.utilisateurRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+                .orElseThrow(() -> new UserNotFoundException("user not found by id : " + id));
 
         this.utilisateurRepository.delete(utilisateurFound);
     }
 
     public UtilisateurDtoResponse banisseUtilisateurById(Long id) {
         Utilisateur utilisateurFound = this.utilisateurRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+                .orElseThrow(() -> new UserNotFoundException("user not found by id : " + id));
 
         utilisateurFound.setActif(false);
 
@@ -71,9 +91,11 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     public UtilisateurDtoResponse activateUtilisateurById(Long id) {
         Utilisateur utilisateurFound = this.utilisateurRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+            .orElseThrow(() -> new UserNotFoundException("user not found by id : " + id));
 
         utilisateurFound.setActif(true);
+
+        this.utilisateurRepository.save(utilisateurFound);
 
         return this.utilisateurMapper.toDtoResponse(utilisateurFound);
     }
@@ -81,7 +103,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public UtilisateurDtoResponse getUtilisateurById(Long id) {
         Utilisateur utilisateurFound = this.utilisateurRepository
                 .findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+            .orElseThrow(() -> new UserNotFoundException("user not found by id : " + id));
 
         return this.utilisateurMapper.toDtoResponse(utilisateurFound);
 
@@ -89,7 +111,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     public void changePassword(Long id, String oldPassword, String newPassword) {
         Utilisateur utilisateurFound = this.utilisateurRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found by id : " + id));
+                .orElseThrow(() -> new UserNotFoundException("user not found by id : " + id));
 
         boolean check = this.passwordEncoder
                 .matches(oldPassword, utilisateurFound.getMotDePasse());
