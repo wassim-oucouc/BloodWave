@@ -26,7 +26,7 @@ public abstract class DonneurMapper{
             @Mapping(source = "lastDonationDate", target = "dateDernierDon"),
             @Mapping(source = "dateOfBirth", target = "dateNaissance"),
             @Mapping(source = "weight", target = "poids"),
-            @Mapping(source = "dons", target = "dtoResponses")
+            @Mapping(source = "dons", target = "dtoResponses", ignore = true)
     })
     public abstract DonneurDtoResponse toDtoResponse(Donneur donneur);
 }

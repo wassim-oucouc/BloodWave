@@ -11,6 +11,7 @@ import java.util.Set;
 @Repository
 public interface DonneurRepository extends JpaRepository<Donneur, Long> {
     List<Donneur> findDonneurByVille(String ville);
+    List<Donneur> findByVilleIgnoreCase(String ville);
 
     List<Donneur> findByGroupeSanguinInAndDisponibleTrue(
             Set<GroupeSanguin> groupes);

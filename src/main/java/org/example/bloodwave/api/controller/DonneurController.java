@@ -82,6 +82,12 @@ public class DonneurController {
         return ResponseEntity.ok(donneurService.getDonneursByCity(city));
     }
 
+    /** Filters donors by city using query param: /api/donneur/by-city?city=Casablanca */
+    @GetMapping("/by-city")
+    public ResponseEntity<List<DonneurDtoResponse>> findDonneursByCity(@RequestParam("city") String city) {
+        return ResponseEntity.ok(donneurService.getDonneursByCity(city));
+    }
+
     @GetMapping("/donneur/{donneurId}")
     public ResponseEntity<DonneurDtoResponse> findDonneurById(@PathVariable Long donneurId)
     {

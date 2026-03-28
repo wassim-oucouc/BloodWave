@@ -15,6 +15,8 @@ public class CollecteSangDtoResponse {
     private String lieu;
     private Integer capaciteMax;
     private String description;
+    private String image;
+
     private StatutCollecte statut;
 
     private HopitalDtoResponse hopitalDtoResponse;

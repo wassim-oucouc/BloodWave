@@ -128,7 +128,13 @@ public class DonneurServiceImpl implements DonneurService {
     }
 
     public List<DonneurDtoResponse> getDonneursByCity(String city) {
-        return this.donneurRepository.findDonneurByVille(city).stream().map(donneurMapper::toDtoResponse).toList();
+        if (city == null || city.trim().isEmpty()) {
+            return List.of();
+        }
+        return this.donneurRepository.findByVilleIgnoreCase(city.trim())
+                .stream()
+                .map(donneurMapper::toDtoResponse)
+                .toList();
     }
 
     public Donneur findDonneurEntityById(Long donneurId)

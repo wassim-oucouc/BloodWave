@@ -37,5 +37,6 @@ public interface StockSangService {
 
     public StockSang getStockSangByGroupeSang(GroupeSanguin groupeSanguin);
 
+    public List<StockSangDtoResponse> getStocksByHopitalId(Long hopitalId);
 
 }
