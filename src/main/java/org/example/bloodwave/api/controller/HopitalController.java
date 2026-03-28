@@ -1,9 +1,11 @@
 package org.example.bloodwave.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bloodwave.application.dto.response.DonDtoResponse;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
 import org.example.bloodwave.application.dto.response.StockSangDtoResponse;
 import org.example.bloodwave.application.dto.response.UniteSangDtoResponse;
+import org.example.bloodwave.application.service.DonneurService;
 import org.example.bloodwave.application.service.HopitalService;
 import org.example.bloodwave.application.service.UniteSangService;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
@@ -30,6 +32,7 @@ public class HopitalController {
 
     private final HopitalService hopitalService;
     private final UniteSangService uniteSangService;
+    private final DonneurService donneurService;
 
     /**
      * Get compatible donors based on blood group.
@@ -42,13 +45,20 @@ public class HopitalController {
      */
     @GetMapping("/donneurs-compatibles")
     public ResponseEntity<List<DonneurDtoResponse>> getCompatibleDonneurs(
-            @RequestParam GroupeSanguin groupe
+            @RequestParam GroupeSanguin groupe,
+            @RequestParam(required = false) String ville
     ) {
 
         List<DonneurDtoResponse> donneurs =
-                hopitalService.findCompatibleDonneurs(groupe);
+            hopitalService.findCompatibleDonneurs(groupe, ville);
 
         return ResponseEntity.ok(donneurs);
+    }
+
+    /** Find donors by city: /api/hopital/donneurs/par-ville?city=Casablanca */
+    @GetMapping("/donneurs/par-ville")
+    public ResponseEntity<List<DonneurDtoResponse>> getDonneursByCity(@RequestParam("city") String city) {
+        return ResponseEntity.ok(donneurService.getDonneursByCity(city));
     }
 
     /**
@@ -89,5 +99,16 @@ public class HopitalController {
         UniteSangDtoResponse unite = uniteSangService.updateStatusUnite(id, nouveauStatut);
 
         return ResponseEntity.ok(unite);
+    }
+
+    /**
+     * Get all donations for a specific hospital
+     *
+     * @param hopitalId The hospital ID
+     * @return List of donations for the hospital
+     */
+    @GetMapping("/{hopitalId}/donations")
+    public ResponseEntity<List<DonDtoResponse>> getDonationsByHopital(@PathVariable Long hopitalId) {
+        return ResponseEntity.ok(hopitalService.getDonationsByHopitalId(hopitalId));
     }
 }

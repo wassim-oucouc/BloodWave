@@ -33,10 +33,11 @@ public abstract class MouvementStockMapper {
 
     @Mapping(source = "stockSangId", target = "stockSang", qualifiedByName = "stockFromId")
     @Mapping(source = "uniteSangId", target = "uniteSang", qualifiedByName = "uniteFromId")
-    abstract MouvementStock toEntity(MouvementStockDTO dto);
+    public abstract MouvementStock toEntity(MouvementStockDTO dto);
 
-    @Mapping(source = "stockSang", target = "stockSangDtoResponse")
-    abstract MouvementStockDtoResponse toDtoResponse(MouvementStock entity);
+    @Mapping(source = "stockSang", target = "stockSangDtoResponse", ignore = true)
+    @Mapping(source = "uniteSang", target = "uniteSangDtoResponse")
+    public abstract MouvementStockDtoResponse toDtoResponse(MouvementStock entity);
 
 @Named("stockFromId")
     public StockSang findStockSangById(Long stockSangId)

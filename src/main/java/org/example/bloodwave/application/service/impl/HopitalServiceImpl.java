@@ -2,11 +2,13 @@ package org.example.bloodwave.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.HopitalDTO;
+import org.example.bloodwave.application.dto.response.DonDtoResponse;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
 import org.example.bloodwave.application.dto.response.HopitalDtoResponse;
 import org.example.bloodwave.application.dto.response.StockSangDtoResponse;
 import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
 import org.example.bloodwave.application.exceptions.UserNotFoundException;
+import org.example.bloodwave.application.mapper.DonMapper;
 import org.example.bloodwave.application.mapper.DonneurMapper;
 import org.example.bloodwave.application.mapper.StockSangMapper;
 import org.example.bloodwave.application.service.EmailService;
@@ -16,6 +18,7 @@ import org.example.bloodwave.domain.entity.StockSang;
 import org.example.bloodwave.domain.entity.Utilisateur;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import org.example.bloodwave.domain.enumeration.RoleType;
+import org.example.bloodwave.domain.repository.DonRepository;
 import org.example.bloodwave.domain.repository.DonneurRepository;
 import org.example.bloodwave.domain.repository.HopitalRepository;
 import org.example.bloodwave.application.service.HopitalService;
@@ -45,6 +48,8 @@ public class HopitalServiceImpl implements HopitalService {
     public final DonneurMapper donneurMapper;
     public final EmailService emailService;
     public final UtilisateurRepository utilisateurRepository;
+    public final DonRepository donRepository;
+    public final DonMapper donMapper;
 
 
 
@@ -106,6 +111,21 @@ public class HopitalServiceImpl implements HopitalService {
              .toList();
     }
 
+    @Override
+    public List<DonneurDtoResponse> findCompatibleDonneurs(GroupeSanguin groupe, String ville) {
+        List<DonneurDtoResponse> donneursCompatibles = findCompatibleDonneurs(groupe);
+
+        if (ville == null || ville.trim().isEmpty()) {
+            return donneursCompatibles;
+        }
+
+        String villeNormalized = ville.trim();
+        return donneursCompatibles.stream()
+                .filter(donneur -> donneur.getVille() != null
+                        && donneur.getVille().equalsIgnoreCase(villeNormalized))
+                .toList();
+    }
+
     public List<StockSangDtoResponse> getStockForConnectedHospital(Long hopitalId) {
 
       Hopital hopital =   this.hopitalRepository
@@ -127,6 +147,14 @@ return   stockSangRepository
                 .orElseThrow(() -> new UserNotFoundException("user not found with id " + userId));
 
         this.emailService.sendEmail(user.getEmail(),subject,object);
+    }
+
+    @Override
+    public List<DonDtoResponse> getDonationsByHopitalId(Long hopitalId) {
+        return donRepository.findByHopital_Id(hopitalId)
+                .stream()
+                .map(donMapper::toDtoResponse)
+                .toList();
     }
 
 }

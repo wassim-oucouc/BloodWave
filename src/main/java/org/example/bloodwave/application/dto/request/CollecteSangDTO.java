@@ -18,6 +18,7 @@ public class CollecteSangDTO {
     private String lieu;
     private Integer capaciteMax;
     private String description;
+    private String image;
 
     private StatutCollecte statut;
 

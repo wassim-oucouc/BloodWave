@@ -9,6 +9,7 @@ public abstract class UtilisateurDtoResponse {
     private Long id;
     private String nom;
     private String prenom;
+    private String imageProfile;
     private String email;
     private String telephone;
     private String adresse;

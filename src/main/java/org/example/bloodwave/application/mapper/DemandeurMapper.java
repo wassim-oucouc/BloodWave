@@ -5,11 +5,18 @@ import org.example.bloodwave.application.dto.request.DemandeurDTO;
 import org.example.bloodwave.application.dto.response.DemandeurDtoResponse;
 import org.example.bloodwave.domain.entity.Demandeur;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public abstract class DemandeurMapper {
+public interface DemandeurMapper {
 
-    public abstract Demandeur toEntity(DemandeurDTO dto);
+    @Mapping(target = "demandeSangs", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "actif", ignore = true)
+    @Mapping(target = "dateCreation", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Demandeur toEntity(DemandeurDTO dto);
 
-    public abstract DemandeurDtoResponse toDtoResponse(Demandeur demandeur);
+    @Mapping(target = "demandeurDtoResponses", ignore = true)
+    DemandeurDtoResponse toDtoResponse(Demandeur demandeur);
 }

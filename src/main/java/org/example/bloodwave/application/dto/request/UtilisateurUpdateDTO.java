@@ -7,6 +7,7 @@ public class UtilisateurUpdateDTO {
     private String nom;
     private String prenom;
     private String email;
+    private String imageProfile;
     private String telephone;
     private String adresse;
     private String ville;

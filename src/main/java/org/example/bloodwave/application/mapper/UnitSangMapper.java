@@ -6,12 +6,17 @@ import org.example.bloodwave.application.dto.request.UniteSangDTO;
 import org.example.bloodwave.application.dto.response.UniteSangDtoResponse;
 import org.example.bloodwave.domain.entity.UniteSang;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public abstract class UnitSangMapper {
+public interface UnitSangMapper {
 
+    @Mapping(target = "don", ignore = true)
+    @Mapping(target = "stockSang", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    UniteSang toEntity(UniteSangDTO uniteSangDTO);
 
-     public abstract UniteSang toEntity(UniteSangDTO uniteSangDTO);
-
-     public abstract UniteSangDtoResponse toDtoResponse(UniteSang uniteSang);
+    @Mapping(target = "stockSangDtoResponse", ignore = true)
+    @Mapping(target = "don", ignore = true)
+    UniteSangDtoResponse toDtoResponse(UniteSang uniteSang);
 }
