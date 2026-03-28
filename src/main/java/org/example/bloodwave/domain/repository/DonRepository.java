@@ -23,4 +23,6 @@ public interface DonRepository extends JpaRepository<Don, Long> {
 
     @Query("SELECT COALESCE(SUM(d.quantite), 0) FROM Don d")
     double sumQuantiteTotale();
+
+    List<Don> findByHopital_Id(Long hopitalId);
 }

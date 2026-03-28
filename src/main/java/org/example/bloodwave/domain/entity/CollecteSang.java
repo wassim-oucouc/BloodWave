@@ -20,6 +20,7 @@ public class CollecteSang {
     private String lieu;
     private Integer capaciteMax;
     private String description;
+    private String image;
     @Enumerated(EnumType.STRING)
     private StatutCollecte statut;
 

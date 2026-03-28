@@ -47,4 +47,9 @@ public class StockSangController {
     public ResponseEntity<List<UniteSangDtoResponse>> getStockUnites(@PathVariable Long id) {
         return ResponseEntity.ok(stockSangService.getUnitesByStockId(id));
     }
+
+    @GetMapping("/hopital/{hopitalId}")
+    public ResponseEntity<List<StockSangDtoResponse>> getStocksByHopital(@PathVariable Long hopitalId) {
+        return ResponseEntity.ok(stockSangService.getStocksByHopitalId(hopitalId));
+    }
 }

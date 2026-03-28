@@ -18,6 +18,8 @@ public interface StockSangRepository extends JpaRepository<StockSang, Long> {
 
     List<StockSang> findByHopital(Hopital hopital);
 
+    List<StockSang> findByHopital_Id(Long hopitalId);
+
     @Query("SELECT COALESCE(SUM(s.quantiteDisponible), 0) FROM StockSang s")
     int sumQuantiteTotale();
 

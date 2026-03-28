@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Lazy;
 
     @Mapping(source = "hopital", target = "hopitalDtoResponse")
     @Mapping(source = "unites", target = "uniteSangDtoResponses")
-    @Mapping(source = "mouvements", target = "mouvements")
+    @Mapping(source = "mouvements", target = "mouvements", ignore = true)
     public abstract StockSangDtoResponse toDtoResponse(StockSang entity);
 
 

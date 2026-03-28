@@ -156,4 +156,12 @@ public class StockSangServiceImpl implements StockSangService {
     {
         return this.stockSangRepository.findStockSangByGroupeSanguin(groupeSanguin).orElseThrow(() ->new StockSangNotFoundException("Stock Sang Not Found with groupeSanguin : " +  groupeSanguin));
     }
+
+    public List<StockSangDtoResponse> getStocksByHopitalId(Long hopitalId) {
+        // Ne pas lancer d'exception si l'hôpital n'existe pas, retourner une liste vide
+        List<StockSang> stocks = stockSangRepository.findByHopital_Id(hopitalId);
+        return stocks.stream()
+                .map(stockSangMapper::toDtoResponse)
+                .toList();
+    }
 }
