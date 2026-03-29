@@ -1,9 +1,6 @@
 package org.example.bloodwave.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @Data
 public class Demandeur extends Utilisateur {
 
+    @Column(name = "groupe_sanguin")
     @Enumerated(EnumType.STRING)
     private GroupeSanguin groupeSanguin;
 

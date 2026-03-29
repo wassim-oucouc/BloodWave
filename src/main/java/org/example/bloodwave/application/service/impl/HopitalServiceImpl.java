@@ -6,6 +6,7 @@ import org.example.bloodwave.application.dto.response.DonDtoResponse;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
 import org.example.bloodwave.application.dto.response.HopitalDtoResponse;
 import org.example.bloodwave.application.dto.response.StockSangDtoResponse;
+import org.example.bloodwave.application.exceptions.EmailAlreadyExistsException;
 import org.example.bloodwave.application.exceptions.HopitalNotFoundException;
 import org.example.bloodwave.application.exceptions.UserNotFoundException;
 import org.example.bloodwave.application.mapper.DonMapper;
@@ -55,7 +56,16 @@ public class HopitalServiceImpl implements HopitalService {
 
     public HopitalDtoResponse registerHopital(HopitalDTO dto)
     {
+        if (dto.getEmail() != null && utilisateurRepository.existsByEmailIgnoreCase(dto.getEmail())) {
+            throw new EmailAlreadyExistsException("email already exists: " + dto.getEmail());
+        }
+
         Hopital hopital  = this.hopitalMapper.toEntity(dto);
+
+        if (dto.getImageProfile() != null) {
+            hopital.setImageProfile(dto.getImageProfile());
+        }
+
         hopital.setRole(RoleType.HOPITAL);
 
         String passwordHashed = this.passwordEncoder.encode(hopital.getMotDePasse());
