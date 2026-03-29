@@ -15,6 +15,8 @@ public interface DemandeurMapper {
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "dateCreation", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "imageProfile", source = "imageProfile")
+
     Demandeur toEntity(DemandeurDTO dto);
 
     @Mapping(target = "demandeurDtoResponses", ignore = true)

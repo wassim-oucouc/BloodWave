@@ -17,7 +17,8 @@ public abstract class DonneurMapper{
             @Mapping(source = "dateNaissance", target = "dateOfBirth"),
             @Mapping(source = "poids", target = "weight"),
             @Mapping(target = "dons", ignore = true),
-            @Mapping(target = "inscriptions", ignore = true)
+            @Mapping(target = "inscriptions", ignore = true),
+            @Mapping(target = "imageProfile", source = "imageProfile")
     })
 
     public abstract Donneur toEntity(DonneurDTO dto);

@@ -1,5 +1,6 @@
 package org.example.bloodwave.application.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
@@ -18,6 +19,7 @@ public abstract class UtilisateurDTO {
     private String nom;
     private String prenom;
     private String email;
+    @JsonAlias({"image_profile", "imageProfile"})
     private String imageProfile;
     private String motDePasse;
     private String telephone;

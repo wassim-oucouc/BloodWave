@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.DemandeurDTO;
 import org.example.bloodwave.application.dto.response.DemandeSangDtoResponse;
 import org.example.bloodwave.application.dto.response.DemandeurDtoResponse;
+import org.example.bloodwave.application.exceptions.EmailAlreadyExistsException;
 import org.example.bloodwave.application.exceptions.DemandeurNotFoundException;
 import org.example.bloodwave.application.mapper.DemandeSangMapper;
 import org.example.bloodwave.domain.entity.Demandeur;
@@ -12,6 +13,7 @@ import org.example.bloodwave.application.mapper.DemandeurMapper;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import org.example.bloodwave.domain.enumeration.RoleType;
 import org.example.bloodwave.domain.repository.DemandeurRepository;
+import org.example.bloodwave.domain.repository.UtilisateurRepository;
 import org.example.bloodwave.application.service.DemandeurService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,10 +29,20 @@ public class DemandeurServiceImpl implements DemandeurService {
     private final PasswordEncoder passwordEncoder;
     private final DemandeurMapper demandeurMapper;
     private final DemandeSangMapper demandeSangMapper;
+    private final UtilisateurRepository utilisateurRepository;
 
     @Override
     public DemandeurDtoResponse registerDemandeur(DemandeurDTO dto) {
+        if (dto.getEmail() != null && utilisateurRepository.existsByEmailIgnoreCase(dto.getEmail())) {
+            throw new EmailAlreadyExistsException("email already exists: " + dto.getEmail());
+        }
+
         Demandeur demandeur = demandeurMapper.toEntity(dto);
+
+        if (dto.getImageProfile() != null) {
+            demandeur.setImageProfile(dto.getImageProfile());
+        }
+
         demandeur.setRole(RoleType.DEMANDEUR);
         demandeur.setActif(true);
         demandeur.setDateCreation(LocalDateTime.now());

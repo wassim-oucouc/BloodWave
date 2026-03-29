@@ -18,6 +18,7 @@ public interface HopitalMapper {
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "imageProfile", source = "imageProfile")
     Hopital toEntity(HopitalDTO dto);
 
     @Mapping(target = "stockSangDTOS", ignore = true)

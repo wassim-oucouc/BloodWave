@@ -16,6 +16,7 @@ public abstract class Utilisateur{
     private Long id;
     private String nom;
     private String prenom;
+      @Column(name = "image_profile")
     private String imageProfile;
     private String email;
     private String motDePasse;

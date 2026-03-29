@@ -48,6 +48,9 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         if (utilisateurDTO.getEmail() != null) {
             utilisateurFound.setEmail(utilisateurDTO.getEmail());
         }
+        if (utilisateurDTO.getImageProfile() != null) {
+            utilisateurFound.setImageProfile(utilisateurDTO.getImageProfile());
+        }
         if (utilisateurDTO.getTelephone() != null) {
             utilisateurFound.setTelephone(utilisateurDTO.getTelephone());
         }

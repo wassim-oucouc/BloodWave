@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import org.example.bloodwave.application.dto.request.DonneurDTO;
 import org.example.bloodwave.application.dto.request.DonneurUpdateDTO;
 import org.example.bloodwave.application.dto.response.DonneurDtoResponse;
+import org.example.bloodwave.application.exceptions.EmailAlreadyExistsException;
 import org.example.bloodwave.application.exceptions.DonneurNotFoundException;
 import org.example.bloodwave.domain.entity.Donneur;
 import org.example.bloodwave.application.mapper.DonneurMapper;
 import org.example.bloodwave.domain.enumeration.GroupeSanguin;
 import org.example.bloodwave.domain.repository.DonneurRepository;
+import org.example.bloodwave.domain.repository.UtilisateurRepository;
 import org.example.bloodwave.application.service.DonneurService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,9 +27,18 @@ public class DonneurServiceImpl implements DonneurService {
     public DonneurMapper donneurMapper;
     public PasswordEncoder passwordEncoder;
     public DonneurRepository donneurRepository;
+    public UtilisateurRepository utilisateurRepository;
 
     public DonneurDtoResponse registerDonneur(DonneurDTO dto) {
+        if (dto.getEmail() != null && utilisateurRepository.existsByEmailIgnoreCase(dto.getEmail())) {
+            throw new EmailAlreadyExistsException("email already exists: " + dto.getEmail());
+        }
+
         Donneur donneur = this.donneurMapper.toEntity(dto);
+
+        if (dto.getImageProfile() != null) {
+            donneur.setImageProfile(dto.getImageProfile());
+        }
 
         String passwordHashed = this.passwordEncoder.encode(donneur.getMotDePasse());
 
