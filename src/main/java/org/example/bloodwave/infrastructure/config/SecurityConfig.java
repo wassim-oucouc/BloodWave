@@ -1,7 +1,6 @@
 package org.example.bloodwave.infrastructure.config;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.filters.CorsFilter;
 import org.example.bloodwave.infrastructure.config.filters.JwtAuthenticationFilter;
 import org.example.bloodwave.domain.repository.UtilisateurRepository;
 import org.example.bloodwave.application.service.impl.CustomUserDetailsService;
@@ -20,10 +19,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -48,9 +47,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/collect-sang", "/api/collect-sang/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/demandes", "/api/demandes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/hopital/stock/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/utilisateurs", "/api/utilisateurs/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/webjars/**").permitAll()
-                        .anyRequest().permitAll())
+                .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -62,7 +66,7 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

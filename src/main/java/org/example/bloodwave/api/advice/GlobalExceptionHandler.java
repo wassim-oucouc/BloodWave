@@ -37,7 +37,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(CollecteAlreadyScheduledException.class)
+    @ExceptionHandler({
+            CollecteAlreadyScheduledException.class,
+            EmailAlreadyExistsException.class
+    })
     public ResponseEntity<Object> handleConflictExceptions(RuntimeException ex) {
         return buildErrorResponse(ex, HttpStatus.CONFLICT);
     }

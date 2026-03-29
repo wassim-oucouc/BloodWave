@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 public interface DonMapper {
 
     @Mapping(target = "donneurDtoResponse", source = "donneur")
-    @Mapping(target = "hopitalDtoResponse", source = "hopital", ignore = true)
+    @Mapping(target = "hopitalDtoResponse", source = "hopital")
     @Mapping(target = "uniteSangDtoResponses", source = "unites", ignore = true)
     DonDtoResponse toDtoResponse(Don don);
 
