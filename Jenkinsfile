@@ -15,14 +15,13 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'git@github.com:wassim-oucouc/BloodWave.git',
-                    credentialsId: 'github-ssh'
+                    url: 'https://github.com/wassim-oucouc/BloodWave.git'
             }
         }
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean verify'
+                sh 'mvn clean verify -Ptest'
             }
         }
 
@@ -48,6 +47,15 @@ pipeline {
             steps {
                 sh 'docker push $DOCKER_IMAGE'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build, Test, and Docker Push completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs for details.'
         }
     }
 }
