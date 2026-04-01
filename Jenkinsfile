@@ -21,6 +21,8 @@ pipeline {
 
         stage('Build & Test') {
             steps {
+                        echo 'Build, Test'
+
                 sh 'mvn clean verify -Ptest'
             }
         }
