@@ -15,8 +15,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'git@github.com:wassim-oucouc/BloodWave.git',
-                    credentialsId: 'github-ssh'
+                    url: 'https://github.com/wassim-oucouc/BloodWave.git'
             }
         }
 
