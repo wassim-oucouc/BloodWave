@@ -16,6 +16,19 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  db-test:
+    image: postgres:17
+    container_name: BloodWave-db-test
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123123
+      POSTGRES_DB: BloodWaveTest
+    ports:
+      - "5482:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+
   redis:
     image: redis:7-alpine
     container_name: bloodwave-redis
@@ -24,6 +37,7 @@ services:
     volumes:
       - redis-data:/data
     restart: always
+
   # =======================
   # PgAdmin
   # =======================
@@ -38,6 +52,46 @@ services:
       - "9090:80"
     depends_on:
       - db
+      - db-test
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bloodwave-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/BloodWave
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123123
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - db
+      - redis
+
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    container_name: bloodwave-jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/var/jenkins_home/workspace/BloodWave
+    environment:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+
 volumes:
   postgres_data:
+  postgres_test_data:
   redis-data:
+  jenkins_home:
