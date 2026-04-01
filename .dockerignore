@@ -1,0 +1,6 @@
+.git
+.idea
+target
+!target/*.jar
+README.md
+docker-compose.yml
