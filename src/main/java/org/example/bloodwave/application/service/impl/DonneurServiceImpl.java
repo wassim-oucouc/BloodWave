@@ -49,6 +49,7 @@ public class DonneurServiceImpl implements DonneurService {
         if (donneur.getDisponible() == null) {
             donneur.setDisponible(true);
         }
+        donneur.setActif(true);
 
         Donneur donneurCreated = this.donneurRepository.save(donneur);
         return this.donneurMapper.toDtoResponse(donneurCreated);

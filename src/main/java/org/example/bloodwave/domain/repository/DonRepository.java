@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +26,15 @@ public interface DonRepository extends JpaRepository<Don, Long> {
     double sumQuantiteTotale();
 
     List<Don> findByHopital_Id(Long hopitalId);
+
+    @Query("""
+            SELECT DISTINCT d
+            FROM Don d
+            LEFT JOIN d.hopital h
+            LEFT JOIN d.unites u
+            LEFT JOIN u.stockSang s
+            LEFT JOIN s.hopital sh
+            WHERE h.id = :hopitalId OR sh.id = :hopitalId
+            """)
+    List<Don> findAllByHopitalAssociation(@Param("hopitalId") Long hopitalId);
 }

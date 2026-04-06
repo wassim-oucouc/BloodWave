@@ -71,6 +71,7 @@ public class HopitalServiceImpl implements HopitalService {
         String passwordHashed = this.passwordEncoder.encode(hopital.getMotDePasse());
 
         hopital.setMotDePasse(passwordHashed);
+        hopital.setActif(true);
 
         Hopital hopitalCreated =  this.hopitalRepository.save(hopital);
 

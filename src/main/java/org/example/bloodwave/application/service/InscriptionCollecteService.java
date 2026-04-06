@@ -8,5 +8,9 @@ public interface InscriptionCollecteService {
 
     List<InscriptionCollecteDtoResponse> getInscriptionsByDonneurId(Long donneurId);
 
+    List<InscriptionCollecteDtoResponse> getInscriptionsByCollectId(Long collectId);
+
     void deleteInscriptionById(Long inscriptionId);
+
+    void deleteInscriptionByCollectAndDonneur(Long collectId, Long donneurId);
 }

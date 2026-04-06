@@ -122,14 +122,23 @@ public class StockSangServiceImpl implements StockSangService {
     }
 
     public void ajouterAuStock(StockSang stock, int quantite, UniteSang unite) {
-        stock.setQuantiteDisponible(stock.getQuantiteDisponible() + quantite);
+        int quantiteActuelle = stock.getQuantiteDisponible() == null ? 0 : stock.getQuantiteDisponible();
+        stock.setQuantiteDisponible(quantiteActuelle + quantite);
         stockSangRepository.save(stock);
+
+        UniteSang uniteSaved = null;
+        if (unite != null) {
+            if (unite.getStockSang() == null) {
+                unite.setStockSang(stock);
+            }
+            uniteSaved = unitSangRepository.save(unite);
+        }
 
         MouvementStock m = new MouvementStock();
         m.setStockSang(stock);
         m.setType(TypeMouvement.ENTREE);
         m.setQuantite(quantite);
-        m.setUniteSang(unite);
+        m.setUniteSang(uniteSaved);
         m.setDate(LocalDateTime.now());
         mouvementStockRepository.save(m);
     }

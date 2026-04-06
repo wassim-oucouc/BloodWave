@@ -22,9 +22,25 @@ public class InscriptionCollecteController {
         return ResponseEntity.ok(inscriptionCollecteService.getInscriptionsByDonneurId(donneurId));
     }
 
+    @GetMapping("/collecte/{collectId}")
+    public ResponseEntity<List<InscriptionCollecteDtoResponse>> getInscriptionsByCollectId(
+            @PathVariable Long collectId
+    ) {
+        return ResponseEntity.ok(inscriptionCollecteService.getInscriptionsByCollectId(collectId));
+    }
+
     @DeleteMapping("/{inscriptionId}")
     public ResponseEntity<Void> deleteInscriptionById(@PathVariable Long inscriptionId) {
         inscriptionCollecteService.deleteInscriptionById(inscriptionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/collecte/{collectId}/donneur/{donneurId}")
+    public ResponseEntity<Void> deleteInscriptionByCollectAndDonneur(
+            @PathVariable Long collectId,
+            @PathVariable Long donneurId
+    ) {
+        inscriptionCollecteService.deleteInscriptionByCollectAndDonneur(collectId, donneurId);
         return ResponseEntity.noContent().build();
     }
 }

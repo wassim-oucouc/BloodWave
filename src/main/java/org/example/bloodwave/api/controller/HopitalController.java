@@ -107,7 +107,7 @@ public class HopitalController {
      * @param hopitalId The hospital ID
      * @return List of donations for the hospital
      */
-    @GetMapping("/{hopitalId}/donations")
+    @GetMapping({"/{hopitalId}/donations", "/donations/{hopitalId}"})
     public ResponseEntity<List<DonDtoResponse>> getDonationsByHopital(@PathVariable Long hopitalId) {
         return ResponseEntity.ok(hopitalService.getDonationsByHopitalId(hopitalId));
     }

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler{
 
     private ResponseEntity<Object> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, Object> body = new HashMap<>();

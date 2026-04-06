@@ -23,8 +23,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.random.RandomGenerator;
@@ -80,6 +83,7 @@ public class DonServiceImpl implements DonService {
         return this.donMapper.toDtoResponse(donCreated);
     }
 
+    @Transactional
     public DonDtoResponse approveDonation(Long id) {
         Don donFound = this.donRepository
                 .findById(id)
@@ -91,6 +95,7 @@ public class DonServiceImpl implements DonService {
                       -> new DonneurNotFoundException("donneur not found with id :" + donFound.getDonneur().getId()));
 
         donFound.setStatut(StatutDon.CONFIRME);
+        donFound.setDateEffective(LocalDateTime.now());
 
         donneur
                 .setNombreDonsTotaux(donneur.getNombreDonsTotaux() + 1);
@@ -103,18 +108,26 @@ public class DonServiceImpl implements DonService {
 
         Don donUpdated = this.donRepository.save(donFound);
         StockSang stockSang = this.stockSangService
-                .getStockSangByGroupeSang(donFound.getDonneur().getGroupeSanguin());
-        int randomNumber = (int)(Math.random() * 900000) + 100000;
+            .getStockByHopitalAndGroupe(donFound.getHopital(), donFound.getDonneur().getGroupeSanguin());
+        int randomNumber = (int)(Math.random() * 900000 ) + 100000;
 
         UniteSang uniteSang = new UniteSang();
         uniteSang.setDon(donFound);
         uniteSang.setStockSang(stockSang);
+        uniteSang.setStatut(org.example.bloodwave.domain.enumeration.StatutUnite.DISPONIBLE);
+        uniteSang.setVolume(donFound.getQuantite());
         uniteSang.setDatePrelevement(LocalDate.now());
         uniteSang.setNumeroUnite("UN-" + randomNumber);
         uniteSang.setDateExpiration(LocalDate.now().plusDays(46));
 
         int quantite = donFound.getQuantite() == null ? 0 : donFound.getQuantite().intValue();
         this.stockSangService.ajouterAuStock(stockSang, quantite, uniteSang);
+
+        if (donUpdated.getUnites() == null) {
+            donUpdated.setUnites(new ArrayList<>());
+        }
+        donUpdated.getUnites().add(uniteSang);
+
         return this.donMapper.toDtoResponse(donUpdated);
 
     }

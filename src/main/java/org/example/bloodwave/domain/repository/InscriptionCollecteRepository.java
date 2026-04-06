@@ -16,8 +16,15 @@ public interface InscriptionCollecteRepository extends JpaRepository<Inscription
 
    List<InscriptionCollecte> findAllByDonneurId(Long donneurId);
 
+   List<InscriptionCollecte> findAllByCollecteId(Long collectId);
+
+   Optional<InscriptionCollecte> findByCollecteIdAndDonneurId(Long collectId, Long donneurId);
+
    @Query("select i from InscriptionCollecte i join fetch i.donneur d join fetch i.collecte c where d.id = :donneurId")
    List<InscriptionCollecte> findAllByDonneurIdWithDetails(@Param("donneurId") Long donneurId);
+
+   @Query("select i from InscriptionCollecte i join fetch i.donneur d join fetch i.collecte c where c.id = :collectId")
+   List<InscriptionCollecte> findAllByCollecteIdWithDetails(@Param("collectId") Long collectId);
 
    @Query("select i.donneur from InscriptionCollecte i where i.id = :inscriptionId")
    Optional<Donneur> findDonneurByInscriptionId(@Param("inscriptionId") Long inscriptionId);

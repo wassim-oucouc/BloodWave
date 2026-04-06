@@ -7,12 +7,12 @@ import org.example.bloodwave.domain.entity.Don;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UnitSangMapper.class})
 public interface DonMapper {
 
     @Mapping(target = "donneurDtoResponse", source = "donneur")
     @Mapping(target = "hopitalDtoResponse", source = "hopital")
-    @Mapping(target = "uniteSangDtoResponses", source = "unites", ignore = true)
+    @Mapping(target = "uniteSangDtoResponses", source = "unites")
     DonDtoResponse toDtoResponse(Don don);
 
     @Mapping(target = "donneur", ignore = true)

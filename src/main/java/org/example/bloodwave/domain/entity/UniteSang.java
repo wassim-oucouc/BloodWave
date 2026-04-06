@@ -22,7 +22,8 @@ public class UniteSang {
     @Enumerated(EnumType.STRING)
     private StatutUnite statut;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "don_id", nullable = true)
     private Don don;
 
     @ManyToOne
